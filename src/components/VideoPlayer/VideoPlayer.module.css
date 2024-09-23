@@ -1,0 +1,108 @@
+.videoPlayer {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #000;
+    position: relative;
+}
+
+.video {
+    width: 100%;
+    display: block;
+}
+
+.controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    transition: opacity 0.3s;
+}
+
+.videoPlayer:hover .controls {
+    opacity: 1;
+}
+
+.playPauseButton,
+.bookmarkButton {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0 10px;
+}
+
+.seekBar {
+    flex-grow: 1;
+    margin: 0 10px;
+    -webkit-appearance: none;
+    background: transparent;
+}
+
+.seekBar::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 5px;
+    background: #ddd;
+    border: none;
+    border-radius: 3px;
+}
+
+.seekBar::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #4CAF50;
+    margin-top: -5px;
+}
+
+.time {
+    color: white;
+    font-size: 14px;
+    min-width: 100px;
+    text-align: center;
+}
+
+.playbackRate {
+    background-color: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 5px;
+    margin-left: 10px;
+}
+
+.bookmarks {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 5px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.bookmark {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.bookmark button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.bookmark button:hover {
+    text-decoration: underline;
+}

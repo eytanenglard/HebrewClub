@@ -1,0 +1,420 @@
+:root {
+    --primary-color: #007bff;
+    --primary-hover-color: #0056b3;
+    --secondary-color: #6c757d;
+    --background-color: #f8f9fa;
+    --card-background: #ffffff;
+    --text-color: #333333;
+    --border-color: #dddddd;
+    --error-color: #dc3545;
+    --success-color: #28a745;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+    --gradient-background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+}
+
+/* Base styles */
+.paymentPageContainer {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: var(--background-color);
+    border-radius: 12px;
+    box-shadow: var(--box-shadow);
+}
+
+.pageTitle {
+    text-align: center;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Card styles */
+.enrollmentSummary,
+.courseDetails {
+    background-color: var(--card-background);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: var(--box-shadow);
+}
+
+.enrollmentSummary h3,
+.courseDetails h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+}
+
+.enrollmentSummary p,
+.courseDetails p {
+    margin: 0.75rem 0;
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+/* Form styles */
+.paymentForm {
+    background-color: var(--card-background);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+}
+
+.formGroup {
+    margin-bottom: 1.5rem;
+}
+
+.formRow {
+    display: flex;
+    gap: 1rem;
+}
+
+.formRow .formGroup {
+    flex: 1;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.formGroup input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.formGroup input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* Button styles */
+.submitButton {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    color: var(--card-background);
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.submitButton:hover {
+    background-color: var(--primary-hover-color);
+}
+
+.submitButton:disabled {
+    background-color: var(--secondary-color);
+    cursor: not-allowed;
+}
+
+.submitButton::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+}
+
+.submitButton:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0, 0);
+        opacity: 1;
+    }
+
+    20% {
+        transform: scale(25, 25);
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(40, 40);
+    }
+}
+
+/* Utility styles */
+.securePaymentNote {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.securePaymentNote i {
+    margin-right: 0.5rem;
+    color: var(--success-color);
+}
+
+.loadingSpinner {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    padding: 2rem;
+}
+
+.loadingSpinner::after {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner 0.75s linear infinite;
+    margin-left: 0.5rem;
+    vertical-align: text-bottom;
+}
+
+@keyframes spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.errorMessage {
+    text-align: center;
+    color: var(--error-color);
+    padding: 1rem;
+    background-color: #f8d7da;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #f5c6cb;
+    font-weight: 500;
+}
+
+/* Success message styles */
+.successContainer {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: var(--card-background);
+    border-radius: 12px;
+    box-shadow: var(--box-shadow);
+}
+
+.successMessage {
+    text-align: center;
+}
+
+.successMessage h2 {
+    color: var(--success-color);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.transactionDetails {
+    background-color: var(--background-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.transactionDetails p {
+    margin: 0.75rem 0;
+    font-size: 1.1rem;
+}
+
+.transactionDetails strong {
+    color: var(--primary-color);
+}
+
+.actionButtons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.downloadButton,
+.returnButton {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.downloadButton {
+    background-color: var(--success-color);
+    color: var(--card-background);
+    border: none;
+}
+
+.downloadButton:hover {
+    background-color: #218838;
+}
+
+.returnButton {
+    background-color: var(--secondary-color);
+    color: var(--card-background);
+    border: none;
+}
+
+.returnButton:hover {
+    background-color: #5a6268;
+}
+
+/* New design ideas */
+
+/* 1. Gradient background for the page */
+body {
+    background: var(--gradient-background);
+    min-height: 100vh;
+}
+
+/* 2. Card hover effect */
+.enrollmentSummary:hover,
+.courseDetails:hover,
+.paymentForm:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 3. Custom checkbox style */
+.customCheckbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.customCheckbox input {
+    display: none;
+}
+
+.customCheckbox span {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--primary-color);
+    border-radius: 4px;
+    display: inline-block;
+    position: relative;
+    margin-right: 10px;
+}
+
+.customCheckbox input:checked+span::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--primary-color);
+}
+
+/* 4. Animated progress bar */
+.progressBar {
+    width: 100%;
+    height: 4px;
+    background-color: var(--border-color);
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.progressBar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 50%;
+    background-color: var(--primary-color);
+    animation: progress 2s ease-in-out infinite;
+}
+
+@keyframes progress {
+    0% {
+        left: -50%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+/* 5. Tooltip style */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltipText {
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltipText {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Responsive styles */
+@media (max-width: 480px) {
+    .formRow {
+        flex-direction: column;
+    }
+
+    .paymentPageContainer,
+    .successContainer {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .paymentForm {
+        padding: 1.5rem;
+    }
+
+    .pageTitle {
+        font-size: 1.75rem;
+    }
+
+    .actionButtons {
+        flex-direction: column;
+    }
+}

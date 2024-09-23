@@ -1,0 +1,121 @@
+.courseContentManagement {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+}
+
+.content {
+  min-height: 300px;
+}
+
+.spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.emptyState {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  font-size: 16px;
+  color: #8c8c8c;
+}
+
+.chapterCollapse {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.chapterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.lessonCollapse {
+  background-color: #ffffff;
+  border-radius: 4px;
+  margin-top: 12px;
+}
+
+.lessonHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.lessonContent {
+  padding: 12px;
+}
+
+.contentSection {
+  margin-bottom: 16px;
+}
+
+.contentItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.contentIcon {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .courseContentManagement {
+    padding: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .title {
+    margin-bottom: 16px;
+  }
+
+  .chapterHeader,
+  .lessonHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .chapterHeader>*:not(:last-child),
+  .lessonHeader>*:not(:last-child) {
+    margin-bottom: 8px;
+  }
+
+  .contentItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .contentItem>*:not(:last-child) {
+    margin-bottom: 8px;
+  }
+}

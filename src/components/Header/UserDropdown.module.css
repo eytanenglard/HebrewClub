@@ -1,0 +1,80 @@
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdownToggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.userAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.dropdownMenu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    z-index: 1000;
+}
+
+.userInfo {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.userName {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.userEmail {
+    display: block;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.dropdownItem {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s;
+}
+
+.dropdownItem:hover {
+    background-color: #f5f5f5;
+}
+
+.dropdownItem svg {
+    margin-left: 10px;
+}
+
+button.dropdownItem {
+    width: 100%;
+    text-align: right;
+    background: none;
+    border: none;
+    cursor: pointer;
+}

@@ -1,0 +1,3541 @@
+מבנה התיקייה:
+admin
+  .dist
+  AdminDashboard.module.css
+  AdminDashboard.tsx
+  adminApi.ts
+  adminconfig.ts
+  common
+  components
+    CourseManagement
+      CourseManagement.module.css
+      CourseManagement.tsx
+    GradeManagement
+      GradeManagement.module.css
+      GradeManagement.tsx
+    LeadManagement
+      LeadManagement.module.css
+      LeadManagement.tsx
+    MessageManagement
+      MessageManagement.module.css
+      MessageManagement.tsx
+    PaymentManagement
+      PaymentManagement.module.css
+      PaymentManagement.tsx
+    Statistics
+      Statistics.module.css
+      Statistics.tsx
+    SystemSettings
+      SystemSettings.module.css
+      SystemSettings.tsx
+    TaskManagement
+      TaskManagement.module.css
+      TaskManagement.tsx
+    UserManagement
+      UserManagement.module.css
+      UserManagement.tsx
+  config
+    adminConfig.ts
+  context
+    AdminContext.tsx
+  hooks
+    useAdminAuth.ts
+  permissions.ts
+  services
+    adminService.ts
+  styles
+    adminStyles.module.css
+  types
+    models.ts
+  utils
+    adminUtils.ts
+
+תוכן הקבצים:
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\adminApi.ts:
+==================================================
+import axios, { AxiosResponse } from 'axios';
+import { User, Course, Grade, Message, Payment, Lead, PaginatedResponse, ApiResponse } from '../types/models';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const LOG_PREFIX = '[adminApi.ts]';
+
+const adminApi = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+});
+
+adminApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem('adminToken');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+});
+
+adminApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      console.error(`${LOG_PREFIX} Unauthorized:`, error.response.data);
+      localStorage.removeItem('adminToken');
+      window.location.href = '/admin/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+// User Management
+export const fetchUsers = (page: number = 1, limit: number = 10, search?: string): Promise<AxiosResponse<PaginatedResponse<User[]>>> => {
+  console.log(`${LOG_PREFIX} Fetching users`);
+  return adminApi.get('/admin/users', { params: { page, limit, search } });
+};
+
+export const createUser = (userData: Partial<User>): Promise<AxiosResponse<ApiResponse<User>>> => {
+  console.log(`${LOG_PREFIX} Creating user`, userData);
+  return adminApi.post('/admin/users', userData);
+};
+
+export const updateUser = (userId: string, userData: Partial<User>): Promise<AxiosResponse<ApiResponse<User>>> => {
+  console.log(`${LOG_PREFIX} Updating user`, userId, userData);
+  return adminApi.put(`/admin/users/${userId}`, userData);
+};
+
+export const deleteUser = (userId: string): Promise<AxiosResponse<ApiResponse<void>>> => {
+  console.log(`${LOG_PREFIX} Deleting user`, userId);
+  return adminApi.delete(`/admin/users/${userId}`);
+};
+
+export const exportUsers = (): Promise<AxiosResponse<Blob>> => {
+  console.log(`${LOG_PREFIX} Exporting users`);
+  return adminApi.get('/admin/users/export', { responseType: 'blob' });
+};
+
+export const importUsers = (file: File): Promise<AxiosResponse<ApiResponse<void>>> => {
+  console.log(`${LOG_PREFIX} Importing users`);
+  const formData = new FormData();
+  formData.append('file', file);
+  return adminApi.post('/admin/users/import', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
+
+export const resetUserPassword = (userId: string): Promise<AxiosResponse<ApiResponse<void>>> => {
+  console.log(`${LOG_PREFIX} Resetting user password`, userId);
+  return adminApi.post(`/admin/users/${userId}/reset-password`);
+};
+
+export const getUserActivity = (userId: string): Promise<AxiosResponse<ApiResponse<any>>> => {
+  console.log(`${LOG_PREFIX} Fetching user activity`, userId);
+  return adminApi.get(`/admin/users/${userId}/activity`);
+};
+
+export const updateUserStatus = (userId: string, status: 'active' | 'locked'): Promise<AxiosResponse<ApiResponse<User>>> => {
+  console.log(`${LOG_PREFIX} Updating user status`, userId, status);
+  return adminApi.patch(`/admin/users/${userId}/status`, { status });
+};
+
+export const getUserStats = (): Promise<AxiosResponse<ApiResponse<any>>> => {
+  console.log(`${LOG_PREFIX} Fetching user stats`);
+  return adminApi.get('/admin/users/stats');
+};
+
+// אין צורך לשנות את שאר הפונקציות הקיימות
+
+export default adminApi;
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\adminconfig.ts:
+==================================================
+export const ADMIN_CONFIG = {
+    USER_MANAGEMENT: {
+      USERS_PER_PAGE: 10,
+      MAX_FAILED_LOGIN_ATTEMPTS: 5,
+      LOCK_DURATION: 15 * 60 * 1000, // 15 minutes in milliseconds
+      PASSWORD_RESET_EXPIRY: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+    },
+    API_ENDPOINTS: {
+      USERS: '/api/admin/users',
+      USER_ACTIVITY: '/api/admin/users/activity',
+      USER_STATS: '/api/admin/users/stats',
+    },
+  };
+  
+  export default ADMIN_CONFIG;
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\AdminDashboard.module.css:
+==================================================
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #5cb85c;
+    --background-color: #f8f9fa;
+    --text-color: #333333;
+    --link-color: #2c3e50;
+    --link-hover-color: #1abc9c;
+    --sidebar-width: 250px;
+    --sidebar-collapsed-width: 60px;
+    --content-padding: 20px;
+}
+
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: 'Roboto', sans-serif;
+    transition: all 0.3s ease;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.dashboard.rtl {
+    direction: rtl;
+}
+
+.adminContent {
+    display: flex;
+    flex: 1;
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    background-color: #ffffff;
+    color: var(--text-color);
+    padding: 20px;
+    transition: all 0.3s ease;
+    overflow-y: auto;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.rtl .sidebar {
+    left: auto;
+    right: 0;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+}
+
+.sidebarToggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--text-color);
+}
+
+.rtl .sidebarToggle {
+    right: auto;
+    left: 10px;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin-bottom: 5px;
+}
+
+.navItem:hover,
+.navItem.active {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--primary-color);
+}
+
+.navItem svg {
+    margin-right: 12px;
+}
+
+.rtl .navItem svg {
+    margin-right: 0;
+    margin-left: 12px;
+}
+
+.content {
+    flex: 1;
+    padding: var(--content-padding);
+    background-color: var(--background-color);
+    overflow-y: auto;
+    margin-left: calc(var(--sidebar-width) + 20px);
+    transition: margin-left 0.3s ease;
+}
+
+.rtl .content {
+    margin-left: 0;
+    margin-right: calc(var(--sidebar-width) + 20px);
+    transition: margin-right 0.3s ease;
+}
+
+.content.expanded {
+    margin-left: calc(var(--sidebar-collapsed-width) + 20px);
+}
+
+.rtl .content.expanded {
+    margin-left: 0;
+    margin-right: calc(var(--sidebar-collapsed-width) + 20px);
+}
+
+.breadcrumbs {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+.breadcrumbs a {
+    color: var(--link-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumbs a:hover {
+    color: var(--link-hover-color);
+}
+
+.backToTop {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, opacity 0.2s ease, visibility 0.2s ease, transform 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.rtl .backToTop {
+    right: auto;
+    left: 20px;
+}
+
+.backToTop.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.backToTop:hover {
+    background-color: #2980b9;
+    transform: translateY(-5px);
+}
+
+.footer {
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    color: #ffffff;
+    padding: 20px;
+    text-align: center;
+}
+
+.footerLinks {
+    margin-bottom: 10px;
+}
+
+.footerLinks a {
+    color: #ffffff;
+    text-decoration: none;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+.footerLinks a:hover {
+    color: #ecf0f1;
+}
+
+.copyright {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.loadingIndicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+
+.keyboardShortcuts {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.rtl .keyboardShortcuts {
+    left: auto;
+    right: 20px;
+}
+
+.scrollProgress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: rgba(255, 255, 255, 0.2);
+    z-index: 1001;
+}
+
+.scrollProgressBar {
+    height: 100%;
+    background-color: var(--secondary-color);
+    transition: width 0.3s ease;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100;
+}
+
+.modalContent {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 100%;
+}
+
+.skipToContent {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--primary-color);
+    color: white;
+    padding: 8px;
+    z-index: 100;
+    transition: top 0.3s;
+}
+
+.rtl .skipToContent {
+    left: auto;
+    right: 0;
+}
+
+.skipToContent:focus {
+    top: 0;
+}
+
+.feedbackButton {
+    position: fixed;
+    right: -40px;
+    top: 50%;
+    transform: rotate(-90deg);
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px 5px 0 0;
+    transition: right 0.3s ease;
+}
+
+.rtl .feedbackButton {
+    right: auto;
+    left: -40px;
+    transform: rotate(90deg);
+    transition: left 0.3s ease;
+}
+
+.feedbackButton:hover {
+    right: -35px;
+}
+
+.rtl .feedbackButton:hover {
+    right: auto;
+    left: -35px;
+}
+
+.onboardingTour {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--primary-color);
+    color: #ffffff;
+    padding: 15px 30px;
+    border-radius: 30px;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.onboardingTour:hover {
+    transform: translateX(-50%) translateY(-5px);
+}
+
+.statusIndicator {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.rtl .statusIndicator {
+    margin-right: 0;
+    margin-left: 20px;
+}
+
+.statusDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.rtl .statusDot {
+    margin-right: 0;
+    margin-left: 5px;
+}
+
+.statusDot.green {
+    background-color: #2ecc71;
+}
+
+.needHelp {
+    position: fixed;
+    bottom: 20px;
+    right: 80px;
+    background-color: #2ecc71;
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.rtl .needHelp {
+    right: auto;
+    left: 80px;
+}
+
+.needHelp:hover {
+    background-color: #27ae60;
+    transform: scale(1.1);
+}
+
+.quickActionMenu {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    background-color: var(--primary-color);
+    padding: 15px 10px;
+    border-radius: 30px 0 0 30px;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.rtl .quickActionMenu {
+    right: auto;
+    left: 0;
+    border-radius: 0 30px 30px 0;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.quickActionButton {
+    display: block;
+    margin-bottom: 15px;
+    background: none;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+
+.quickActionButton:hover {
+    transform: scale(1.2);
+}
+
+.languageSelector {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.rtl .languageSelector {
+    right: auto;
+    left: 20px;
+}
+
+.languageSelector select {
+    background-color: var(--primary-color);
+    border: none;
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.languageSelector select:hover {
+    background-color: #2980b9;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: -250px;
+        top: 0;
+        bottom: 0;
+        z-index: 1000;
+    }
+
+    .rtl .sidebar {
+        left: auto;
+        right: -250px;
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .rtl .sidebar.open {
+        left: auto;
+        right: 0;
+    }
+
+    .content {
+        margin-left: 0;
+    }
+
+    .rtl .content {
+        margin-right: 0;
+    }
+
+    .quickActionMenu {
+        display: none;
+    }
+
+    .languageSelector {
+        top: 10px;
+        right: 10px;
+    }
+
+    .rtl .languageSelector {
+        right: auto;
+        left: 10px;
+    }
+}
+
+/* Accessibility styles */
+.visuallyHidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus styles for keyboard navigation */
+:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .sidebar,
+    .footer,
+    .backToTop,
+    .quickActionMenu,
+    .needHelp,
+    .languageSelector {
+        display: none;
+    }
+
+    .content {
+        margin-left: 0;
+    }
+
+    .rtl .content {
+        margin-right: 0;
+    }
+
+    .dashboard {
+        background-color: white;
+        color: black;
+    }
+}
+/* Add these styles to your AdminDashboard.module.css file */
+/* Existing styles... */
+
+.dashboardContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .mainHeader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px; /* Adjust based on your main header height */
+    z-index: 1000;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dashboardContent {
+    display: flex;
+    flex: 1;
+    margin-top: 60px; /* Should match the header height */
+  }
+  
+  .sidebar {
+    position: fixed;
+    top: 120px; /* Increased from 60px to 120px to create more space */
+    left: 0;
+    bottom: 0;
+    width: var(--sidebar-width);
+    overflow-y: auto;
+    padding-top: 20px; /* Added padding to push content down further */
+  }
+  
+  .content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: var(--content-padding);
+    padding-top: 80px; /* Increased padding-top to push content down */
+    transition: margin-left 0.3s ease;
+  }
+  
+  .content.expanded {
+    margin-left: var(--sidebar-collapsed-width);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .sidebar {
+      left: -var(--sidebar-width);
+      top: 80px; /* Adjusted for mobile view */
+    }
+  
+    .sidebar.open {
+      left: 0;
+    }
+  
+    .content {
+      margin-left: 0;
+      padding-top: 40px; /* Adjusted for mobile view */
+    }
+  }
+  
+  /* RTL support */
+  .rtl .sidebar {
+    left: auto;
+    right: 0;
+  }
+  
+  .rtl .content {
+    margin-left: 0;
+    margin-right: var(--sidebar-width);
+  }
+  
+  .rtl .content.expanded {
+    margin-right: var(--sidebar-collapsed-width);
+  }
+  
+  @media (max-width: 768px) {
+    .rtl .sidebar {
+      left: auto;
+      right: -var(--sidebar-width);
+    }
+  
+    .rtl .sidebar.open {
+      right: 0;
+    }
+  
+    .rtl .content {
+      margin-right: 0;
+    }
+  }
+  /* Existing styles... */
+
+.dashboardContent {
+    display: flex;
+    flex: 1;
+    margin-top: 60px; /* Should match the header height */
+  }
+  
+  .sidebar {
+    position: fixed;
+    top: 120px; /* As previously adjusted */
+    left: 0;
+    bottom: 0;
+    width: var(--sidebar-width);
+    overflow-y: auto;
+    padding-top: 20px;
+  }
+  
+  .content {
+    flex: 1;
+    margin-left: calc(var(--sidebar-width) + 40px); /* Increased margin */
+    padding: var(--content-padding);
+    padding-top: 80px;
+    transition: margin-left 0.3s ease;
+  }
+  
+  .content.expanded {
+    margin-left: calc(var(--sidebar-collapsed-width) + 40px); /* Adjusted for collapsed sidebar */
+  }
+  
+  /* RTL support */
+  .rtl .sidebar {
+    left: auto;
+    right: 0;
+  }
+  
+  .rtl .content {
+    margin-left: 0;
+    margin-right: calc(var(--sidebar-width) + 40px); /* Increased margin for RTL */
+    transition: margin-right 0.3s ease;
+  }
+  
+  .rtl .content.expanded {
+    margin-right: calc(var(--sidebar-collapsed-width) + 40px); /* Adjusted for collapsed sidebar in RTL */
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .sidebar {
+      left: -var(--sidebar-width);
+      top: 80px;
+    }
+  
+    .sidebar.open {
+      left: 0;
+    }
+  
+    .content {
+      margin-left: 20px; /* Smaller margin for mobile */
+      padding-top: 40px;
+    }
+  
+    .rtl .sidebar {
+      left: auto;
+      right: -var(--sidebar-width);
+    }
+  
+    .rtl .sidebar.open {
+      right: 0;
+    }
+  
+    .rtl .content {
+      margin-right: 20px; /* Smaller margin for mobile in RTL */
+      margin-left: 0;
+    }
+  }
+  
+  /* Rest of your existing styles... */
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\AdminDashboard.tsx:
+==================================================
+import React, { useState, useEffect, lazy, Suspense } from "react";
+import {
+  Routes,
+  Route,
+  useNavigate,
+  useLocation,
+  Link,
+} from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaSearch,
+  FaUser,
+  FaBell,
+  FaHome,
+  FaBook,
+  FaTasks,
+  FaGraduationCap,
+  FaEnvelope,
+  FaMoneyBillWave,
+  FaUserPlus,
+  FaChartBar,
+  FaCog,
+  FaBars,
+  FaChevronUp,
+  FaPlus,
+  FaQuestion,
+  FaLanguage,
+  FaFileExport,
+  FaCalendarAlt,
+  FaStar,
+  FaEye,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
+import styles from "./AdminDashboard.module.css";
+
+// Lazy load components
+const UserManagement = lazy(
+  () => import("./components/UserManagement/UserManagement")
+);
+const CourseManagement = lazy(
+  () => import("./components/CourseManagement/CourseManagement")
+);
+const TaskManagement = lazy(
+  () => import("./components/TaskManagement/TaskManagement")
+);
+const GradeManagement = lazy(
+  () => import("./components/GradeManagement/GradeManagement")
+);
+const MessageManagement = lazy(
+  () => import("./components/MessageManagement/MessageManagement")
+);
+const PaymentManagement = lazy(
+  () => import("./components/PaymentManagement/PaymentManagement")
+);
+const LeadManagement = lazy(
+  () => import("./components/LeadManagement/LeadManagement")
+);
+const Statistics = lazy(() => import("./components/Statistics/Statistics"));
+const SystemSettings = lazy(
+  () => import("./components/SystemSettings/SystemSettings")
+);
+
+interface Notification {
+  id: number;
+  message: string;
+  timestamp: Date;
+  read: boolean;
+}
+
+const AdminDashboard: React.FC = () => {
+  const { t, i18n } = useTranslation();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
+  const [showBackToTop, setShowBackToTop] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [showNotifications, setShowNotifications] = useState<boolean>(false);
+  const [showKeyboardShortcuts, setShowKeyboardShortcuts] =
+    useState<boolean>(false);
+  const [scrollProgress, setScrollProgress] = useState<number>(0);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.pageYOffset;
+      const windowHeight =
+        document.documentElement.scrollHeight -
+        document.documentElement.clientHeight;
+      const progress = (scrollPosition / windowHeight) * 100;
+      setScrollProgress(progress);
+      setShowBackToTop(scrollPosition > 300);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    // Simulating fetching notifications
+    setNotifications([
+      {
+        id: 1,
+        message: "New user registered",
+        timestamp: new Date(),
+        read: false,
+      },
+      { id: 2, message: "Course updated", timestamp: new Date(), read: false },
+      {
+        id: 3,
+        message: "New payment received",
+        timestamp: new Date(),
+        read: false,
+      },
+    ]);
+  }, []);
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === "?") {
+        setShowKeyboardShortcuts(!showKeyboardShortcuts);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [showKeyboardShortcuts]);
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Implement global search functionality
+    console.log("Searching for:", searchTerm);
+  };
+
+  const handleNotificationClick = () => {
+    setShowNotifications(!showNotifications);
+  };
+
+  const handleLanguageChange = (lang: string) => {
+    i18n.changeLanguage(lang);
+    document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
+  };
+
+  const navItems = [
+    { path: "users", icon: FaUser, label: "Users" },
+    { path: "courses", icon: FaBook, label: "Courses" },
+    { path: "tasks", icon: FaTasks, label: "Tasks" },
+    { path: "grades", icon: FaGraduationCap, label: "Grades" },
+    { path: "messages", icon: FaEnvelope, label: "Messages" },
+    { path: "payments", icon: FaMoneyBillWave, label: "Payments" },
+    { path: "leads", icon: FaUserPlus, label: "Leads" },
+    { path: "statistics", icon: FaChartBar, label: "Statistics" },
+    { path: "settings", icon: FaCog, label: "Settings" },
+  ];
+
+  return (
+    <div
+      className={`${styles.dashboard} ${
+        i18n.language === "he" ? styles.rtl : ""
+      }`}
+    >
+      <div className={styles.adminContent}>
+        <nav
+          className={`${styles.sidebar} ${
+            sidebarCollapsed ? styles.collapsed : ""
+          }`}
+        >
+          <button className={styles.sidebarToggle} onClick={toggleSidebar}>
+            {sidebarCollapsed ? <FaChevronRight /> : <FaChevronLeft />}
+          </button>
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              to={`/admin/${item.path}`}
+              className={`${styles.navItem} ${
+                location.pathname.includes(item.path) ? styles.active : ""
+              }`}
+            >
+              <item.icon />
+              {!sidebarCollapsed && (
+                <span>{t(`admin.nav.${item.label.toLowerCase()}`)}</span>
+              )}
+            </Link>
+          ))}
+        </nav>
+
+        <main
+          className={`${styles.content} ${
+            sidebarCollapsed ? styles.expanded : ""
+          }`}
+        >
+          <div className={styles.breadcrumbs}>
+            <Link to="/admin">Dashboard</Link>
+            {location.pathname
+              .split("/")
+              .slice(2)
+              .map((path, index) => (
+                <React.Fragment key={path}>
+                  <span> / </span>
+                  <Link to={`/admin/${path}`}>
+                    {t(`admin.nav.${path.toLowerCase()}`)}
+                  </Link>
+                </React.Fragment>
+              ))}
+          </div>
+
+          <div className={styles.customizableDashboard}>
+            {/* Add customizable widgets here */}
+          </div>
+
+          <Suspense
+            fallback={<div className={styles.loadingIndicator}>Loading...</div>}
+          >
+            <Routes>
+              <Route path="users" element={<UserManagement />} />
+              <Route path="courses" element={<CourseManagement />} />
+              <Route path="tasks" element={<TaskManagement />} />
+              <Route path="grades" element={<GradeManagement />} />
+              <Route path="messages" element={<MessageManagement />} />
+              <Route path="payments" element={<PaymentManagement />} />
+              <Route path="leads" element={<LeadManagement />} />
+              <Route path="statistics" element={<Statistics />} />
+              <Route path="settings" element={<SystemSettings />} />
+            </Routes>
+          </Suspense>
+        </main>
+      </div>
+
+      <footer className={styles.footer}>
+        <div className={styles.footerLinks}>
+          <a href="/terms">{t("admin.footer.terms")}</a>
+          <a href="/privacy">{t("admin.footer.privacy")}</a>
+          <a href="/contact">{t("admin.footer.contact")}</a>
+        </div>
+        <div className={styles.copyright}>
+          &copy; 2024 Admin Dashboard. All rights reserved.
+        </div>
+      </footer>
+
+      <motion.button
+        className={`${styles.backToTop} ${showBackToTop ? styles.visible : ""}`}
+        onClick={scrollToTop}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: showBackToTop ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <FaChevronUp />
+      </motion.button>
+
+      <button className={styles.needHelp}>
+        <FaQuestion />
+      </button>
+
+      <div className={styles.quickActionMenu}>
+        <button className={styles.quickActionButton} title="Favorites">
+          <FaStar />
+        </button>
+        <button className={styles.quickActionButton} title="Export">
+          <FaFileExport />
+        </button>
+        <button className={styles.quickActionButton} title="Help">
+          <FaQuestion />
+        </button>
+      </div>
+
+      {showKeyboardShortcuts && (
+        <div className={styles.keyboardShortcuts}>
+          <h3>Keyboard Shortcuts</h3>
+          <ul>
+            <li>
+              <kbd>?</kbd> - Toggle this menu
+            </li>
+            <li>
+              <kbd>Ctrl</kbd> + <kbd>F</kbd> - Focus search bar
+            </li>
+            <li>
+              <kbd>Esc</kbd> - Close modals
+            </li>
+            {/* Add more shortcuts as needed */}
+          </ul>
+        </div>
+      )}
+
+      <div className={styles.scrollProgress}>
+        <div
+          className={styles.scrollProgressBar}
+          style={{ width: `${scrollProgress}%` }}
+        ></div>
+      </div>
+
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            className={styles.modal}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+          >
+            <div className={styles.modalContent}>
+              {/* Modal content goes here */}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <button
+        className={styles.skipToContent}
+        onClick={() => document.querySelector("main")?.focus()}
+      >
+        Skip to main content
+      </button>
+
+      <button
+        className={styles.feedbackButton}
+        onClick={() => setIsModalOpen(true)}
+      >
+        Feedback
+      </button>
+
+      <div className={styles.onboardingTour}>
+        <button onClick={() => console.log("Start onboarding tour")}>
+          Take a Tour
+        </button>
+      </div>
+
+      <div className={styles.statusIndicator}>
+        <div className={`${styles.statusDot} ${styles.green}`}></div>
+        <span>System Status: Operational</span>
+      </div>
+
+      <div className={styles.languageSelector}>
+        <select
+          onChange={(e) => handleLanguageChange(e.target.value)}
+          value={i18n.language}
+        >
+          <option value="en">English</option>
+          <option value="he">עברית</option>
+        </select>
+      </div>
+    </div>
+  );
+};
+
+export default AdminDashboard;
+
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\permissions.ts:
+==================================================
+export const USER_PERMISSIONS = {
+    VIEW_USERS: 'view_users',
+    CREATE_USER: 'create_user',
+    EDIT_USER: 'edit_user',
+    DELETE_USER: 'delete_user',
+    CHANGE_USER_STATUS: 'change_user_status',
+    EXPORT_USERS: 'export_users',
+    IMPORT_USERS: 'import_users',
+    VIEW_USER_ACTIVITY: 'view_user_activity',
+    VIEW_USER_STATS: 'view_user_stats',
+  };
+  
+  export const hasPermission = (userPermissions: string[], requiredPermission: string): boolean => {
+    return userPermissions.includes(requiredPermission);
+  };
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\CourseManagement\CourseManagement.module.css:
+==================================================
+.courseManagement {
+    padding: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.darkMode {
+    background-color: #1f1f1f;
+    color: #ffffff;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.courseGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.courseCard {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.darkMode .courseCard {
+    background-color: #2f2f2f;
+    color: #ffffff;
+}
+
+.courseInfo h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.courseMetrics {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.usersCount {
+    font-weight: bold;
+}
+
+.courseActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.darkModeToggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+/* Modal styles */
+:global(.ant-modal-content) {
+    border-radius: 8px;
+}
+
+:global(.ant-modal-header) {
+    border-radius: 8px 8px 0 0;
+}
+
+:global(.ant-modal-footer) {
+    border-radius: 0 0 8px 8px;
+}
+
+/* Form styles */
+:global(.ant-form-item-label > label) {
+    font-weight: bold;
+}
+
+:global(.ant-input),
+:global(.ant-select-selector) {
+    border-radius: 4px;
+}
+
+/* Button styles */
+:global(.ant-btn) {
+    border-radius: 4px;
+}
+
+/* List styles for user management */
+:global(.ant-list-item) {
+    padding: 12px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+:global(.ant-list-item:hover) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.darkMode :global(.ant-list-item:hover) {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .actions {
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+
+    .courseGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\CourseManagement\CourseManagement.tsx:
+==================================================
+import React, { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaSearch,
+  FaPlus,
+  FaListUl,
+  FaTh,
+  FaStar,
+  FaEye,
+  FaPencilAlt,
+  FaTrash,
+  FaCalendarAlt,
+  FaFilter,
+  FaUserPlus,
+  FaUserMinus,
+} from "react-icons/fa";
+import {
+  Tooltip,
+  Modal,
+  Button,
+  Input,
+  Select,
+  Switch,
+  Pagination,
+  Spin,
+  Progress,
+  Rate,
+  DatePicker,
+  Form,
+  message,
+  List,
+  Avatar,
+  Divider,
+} from "antd";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DroppableProvided,
+  DraggableProvided,
+  DropResult,
+} from "@hello-pangea/dnd";
+import dayjs, { Dayjs } from "dayjs";
+import styles from "./CourseManagement.module.css";
+import { useApi } from "../../../../hooks/useApi";
+import { Course, User } from "../../../../types/models";
+
+const { RangePicker } = DatePicker;
+const { Option } = Select;
+interface CourseWithPopulatedInstructor
+  extends Omit<Course, "instructor" | "users"> {
+  instructor: User;
+  users: User[];
+}
+
+interface Filters {
+  difficulty: ("beginner" | "intermediate" | "advanced")[];
+  status: ("active" | "upcoming" | "completed")[];
+  dateRange: [Dayjs, Dayjs] | null;
+}
+
+const CourseManagement: React.FC = () => {
+  const [form] = Form.useForm();
+  const [courses, setCourses] = useState<CourseWithPopulatedInstructor[]>([]);
+  const [filteredCourses, setFilteredCourses] = useState<
+    CourseWithPopulatedInstructor[]
+  >([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [sortBy, setSortBy] = useState<string>("title");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [filterModalOpen, setFilterModalOpen] = useState<boolean>(false);
+  const [filters, setFilters] = useState<Filters>({
+    difficulty: [],
+    status: [],
+    dateRange: null,
+  });
+  const [selectedCourse, setSelectedCourse] =
+    useState<CourseWithPopulatedInstructor | null>(null);
+  const [userModalOpen, setUserModalOpen] = useState<boolean>(false);
+  const [newUserForm] = Form.useForm();
+
+  const pageSize: number = 12;
+  const api = useApi();
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  useEffect(() => {
+    const filtered = filterAndSortCourses(courses);
+    setFilteredCourses(filtered);
+  }, [courses, searchTerm, sortBy, filters]);
+
+  const fetchCourses = async () => {
+    setLoading(true);
+    try {
+      const fetchedCourses = await api.fetchCourses();
+      setCourses(fetchedCourses as CourseWithPopulatedInstructor[]);
+    } catch (error) {
+      message.error("Failed to fetch courses");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterAndSortCourses = useCallback(
+    (
+      coursesToFilter: CourseWithPopulatedInstructor[]
+    ): CourseWithPopulatedInstructor[] => {
+      let result = [...coursesToFilter];
+
+      // Apply search filter
+      if (searchTerm) {
+        result = result.filter(
+          (course) =>
+            course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            course.instructor.name
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase()) ||
+            course.description.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+
+      // Apply difficulty filter
+      if (filters.difficulty.length > 0) {
+        result = result.filter((course) =>
+          filters.difficulty.includes(course.level)
+        );
+      }
+
+      // Apply sorting
+      result.sort((a, b) => {
+        switch (sortBy) {
+          case "title":
+            return a.title.localeCompare(b.title);
+          case "instructor":
+            return a.instructor.name.localeCompare(b.instructor.name);
+          case "duration":
+            return a.duration - b.duration;
+          case "users":
+            return b.users.length - a.users.length;
+          default:
+            return 0;
+        }
+      });
+
+      return result;
+    },
+    [searchTerm, sortBy, filters]
+  );
+
+  const handleSearch = (value: string): void => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleSort = (value: string): void => {
+    setSortBy(value);
+  };
+
+  const handlePageChange = (page: number): void => {
+    setCurrentPage(page);
+  };
+
+  const toggleModal = (): void => {
+    setIsModalOpen(!isModalOpen);
+  };
+
+  const handleDragEnd = (result: DropResult): void => {
+    if (!result.destination) {
+      return;
+    }
+
+    const items = Array.from(courses);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setCourses(items);
+  };
+
+  const renderCourseCard = (
+    course: CourseWithPopulatedInstructor,
+    index: number
+  ): JSX.Element => (
+    <Draggable
+      key={course._id.toString()}
+      draggableId={course._id.toString()}
+      index={index}
+    >
+      {(provided: DraggableProvided) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+        >
+          <motion.div
+            className={styles.courseCard}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <div className={styles.courseInfo}>
+              <h3>{course.title}</h3>
+              <p>{course.instructor.name}</p>
+              <p>{course.description}</p>
+              <div className={styles.courseMetrics}>
+                <span className={styles.usersCount}>
+                  {course.users.length} users
+                </span>
+                <Rate disabled defaultValue={course.rating} />
+              </div>
+              <Progress percent={course.completionRate} size="small" />
+              <div className={styles.courseActions}>
+                <Tooltip title="View">
+                  <Button
+                    icon={<FaEye />}
+                    onClick={() => handleViewCourse(course._id.toString())}
+                  />
+                </Tooltip>
+                <Tooltip title="Edit">
+                  <Button
+                    icon={<FaPencilAlt />}
+                    onClick={() => handleEditCourse(course._id.toString())}
+                  />
+                </Tooltip>
+                <Tooltip title="Delete">
+                  <Button
+                    icon={<FaTrash />}
+                    danger
+                    onClick={() => handleDeleteCourse(course._id.toString())}
+                  />
+                </Tooltip>
+                <Tooltip title="Manage Users">
+                  <Button
+                    icon={<FaUserPlus />}
+                    onClick={() => handleManageUsers(course)}
+                  />
+                </Tooltip>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </Draggable>
+  );
+
+  const handleFilterChange = (newFilters: Partial<Filters>): void => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      ...newFilters,
+    }));
+    setCurrentPage(1);
+  };
+
+  const resetFilters = (): void => {
+    setFilters({
+      difficulty: [],
+      status: [],
+      dateRange: null,
+    });
+    setCurrentPage(1);
+  };
+
+  const handleAddCourse = async (values: any): Promise<void> => {
+    try {
+      setLoading(true);
+      const newCourse = await api.createCourse(values);
+      setCourses((prevCourses) => [
+        ...prevCourses,
+        newCourse as CourseWithPopulatedInstructor,
+      ]);
+      message.success("Course added successfully");
+      toggleModal();
+      form.resetFields();
+    } catch (error) {
+      console.error("Failed to add course:", error);
+      message.error("Failed to add course. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleViewCourse = (courseId: string) => {
+    // Implement view course functionality
+    console.log("Viewing course:", courseId);
+  };
+
+  const handleEditCourse = (courseId: string) => {
+    // Implement edit course functionality
+    console.log("Editing course:", courseId);
+  };
+
+  const handleDeleteCourse = async (courseId: string) => {
+    try {
+      await api.deleteCourse(courseId);
+      setCourses((prevCourses) =>
+        prevCourses.filter((course) => course._id.toString() !== courseId)
+      );
+      message.success("Course deleted successfully");
+    } catch (error) {
+      message.error("Failed to delete course");
+    }
+  };
+
+  const handleManageUsers = (course: CourseWithPopulatedInstructor) => {
+    setSelectedCourse(course);
+    setUserModalOpen(true);
+  };
+
+  const handleAddUser = async (values: { name: string; email: string }) => {
+    if (selectedCourse) {
+      try {
+        const updatedCourse = await api.addUserToCourse(
+          selectedCourse._id.toString(),
+          values
+        );
+        setCourses((prevCourses) =>
+          prevCourses.map((course) =>
+            course._id === selectedCourse._id
+              ? (updatedCourse as CourseWithPopulatedInstructor)
+              : course
+          )
+        );
+        setSelectedCourse(updatedCourse as CourseWithPopulatedInstructor);
+        message.success("User added successfully");
+        newUserForm.resetFields();
+      } catch (error) {
+        message.error("Failed to add user");
+      }
+    }
+  };
+
+  const handleRemoveUser = async (userId: string) => {
+    if (selectedCourse) {
+      try {
+        const updatedCourse = await api.removeUserFromCourse(
+          selectedCourse._id.toString(),
+          userId
+        );
+        setCourses((prevCourses) =>
+          prevCourses.map((course) =>
+            course._id === selectedCourse._id
+              ? (updatedCourse as CourseWithPopulatedInstructor)
+              : course
+          )
+        );
+        setSelectedCourse(updatedCourse as CourseWithPopulatedInstructor);
+        message.success("User removed successfully");
+      } catch (error) {
+        message.error("Failed to remove user");
+      }
+    }
+  };
+
+  return (
+    <div
+      className={`${styles.courseManagement} ${
+        darkMode ? styles.darkMode : ""
+      }`}
+    >
+      <header className={styles.header}>
+        <h2>Course Management</h2>
+        <div className={styles.actions}>
+          <Input.Search
+            placeholder="Search courses"
+            onSearch={handleSearch}
+            style={{ width: 200 }}
+          />
+          <Select
+            defaultValue="title"
+            style={{ width: 120 }}
+            onChange={handleSort}
+          >
+            <Option value="title">Title</Option>
+            <Option value="instructor">Instructor</Option>
+            <Option value="duration">Duration</Option>
+            <Option value="users">Users</Option>
+          </Select>
+          <Tooltip title="Filter courses">
+            <Button
+              icon={<FaFilter />}
+              onClick={() => setFilterModalOpen(true)}
+            />
+          </Tooltip>
+          <Tooltip title="Toggle view">
+            <Button
+              icon={viewMode === "grid" ? <FaListUl /> : <FaTh />}
+              onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+            />
+          </Tooltip>
+          <Tooltip title="Add new course">
+            <Button type="primary" icon={<FaPlus />} onClick={toggleModal}>
+              Add Course
+            </Button>
+          </Tooltip>
+        </div>
+      </header>
+
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="courses">
+          {(provided: DroppableProvided) => (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className={styles.courseGrid}
+            >
+              <AnimatePresence>
+                {loading ? (
+                  <Spin size="large" />
+                ) : (
+                  filteredCourses
+                    .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+                    .map((course, index) => renderCourseCard(course, index))
+                )}
+              </AnimatePresence>
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+
+      <Pagination
+        current={currentPage}
+        total={filteredCourses.length}
+        pageSize={pageSize}
+        onChange={handlePageChange}
+        className={styles.pagination}
+      />
+
+      <Modal
+        title="Add New Course"
+        open={isModalOpen}
+        onCancel={toggleModal}
+        footer={null}
+      >
+        <Form form={form} onFinish={handleAddCourse} layout="vertical">
+          <Form.Item
+            name="title"
+            label="Course Title"
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="instructor"
+            label="Instructor"
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="description"
+            label="Description"
+            rules={[{ required: true }]}
+          >
+            <Input.TextArea />
+          </Form.Item>
+          <Form.Item
+            name="duration"
+            label="Duration (hours)"
+            rules={[
+              {
+                required: true,
+                transform: (value) => Number(value),
+                type: "number",
+                min: 1,
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="level"
+            label="Difficulty"
+            rules={[
+              {
+                required: true,
+                message: "Please select the course difficulty",
+              },
+            ]}
+          >
+            <Select>
+              <Option value="beginner">Beginner</Option>
+              <Option value="intermediate">Intermediate</Option>
+              <Option value="advanced">Advanced</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="price"
+            label="Price"
+            rules={[
+              {
+                required: true,
+                transform: (value) => Number(value),
+                type: "number",
+                min: 0,
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item name="tags" label="Tags">
+            <Select
+              mode="tags"
+              style={{ width: "100%" }}
+              placeholder="Enter tags"
+            ></Select>
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Add Course
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="Filter Courses"
+        open={filterModalOpen}
+        onCancel={() => setFilterModalOpen(false)}
+        footer={[
+          <Button key="reset" onClick={resetFilters}>
+            Reset Filters
+          </Button>,
+          <Button
+            key="apply"
+            type="primary"
+            onClick={() => setFilterModalOpen(false)}
+          >
+            Apply Filters
+          </Button>,
+        ]}
+      >
+        <Form layout="vertical">
+          <Form.Item label="Difficulty">
+            <Select
+              mode="multiple"
+              style={{ width: "100%" }}
+              placeholder="Select difficulties"
+              value={filters.difficulty}
+              onChange={(value: ("beginner" | "intermediate" | "advanced")[]) =>
+                handleFilterChange({ difficulty: value })
+              }
+            >
+              <Option value="beginner">Beginner</Option>
+              <Option value="intermediate">Intermediate</Option>
+              <Option value="advanced">Advanced</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Status">
+            <Select
+              mode="multiple"
+              style={{ width: "100%" }}
+              placeholder="Select statuses"
+              value={filters.status}
+              onChange={(value: ("active" | "upcoming" | "completed")[]) =>
+                handleFilterChange({ status: value })
+              }
+            >
+              <Option value="active">Active</Option>
+              <Option value="upcoming">Upcoming</Option>
+              <Option value="completed">Completed</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Date Range">
+            <RangePicker
+              value={filters.dateRange}
+              onChange={(dates) =>
+                handleFilterChange({
+                  dateRange: dates as [Dayjs, Dayjs] | null,
+                })
+              }
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title={`Manage Users - ${selectedCourse?.title}`}
+        open={userModalOpen}
+        onCancel={() => setUserModalOpen(false)}
+        footer={null}
+      >
+        {selectedCourse && (
+          <>
+            <List
+              dataSource={selectedCourse?.users}
+              renderItem={(user: User) => (
+                <List.Item
+                  actions={[
+                    <Button
+                      icon={<FaUserMinus />}
+                      onClick={() => handleRemoveUser(user._id)}
+                      danger
+                    >
+                      Remove
+                    </Button>,
+                  ]}
+                >
+                  <List.Item.Meta
+                    avatar={<Avatar>{user.name[0]}</Avatar>}
+                    title={user.name}
+                    description={user.email}
+                  />
+                </List.Item>
+              )}
+            />
+
+            <Divider />
+            <Form form={newUserForm} onFinish={handleAddUser} layout="vertical">
+              <Form.Item name="name" rules={[{ required: true }]}>
+                <Input placeholder="User Name" />
+              </Form.Item>
+              <Form.Item
+                name="email"
+                rules={[{ required: true, type: "email" }]}
+              >
+                <Input placeholder="User Email" />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit" icon={<FaUserPlus />}>
+                  Add User
+                </Button>
+              </Form.Item>
+            </Form>
+          </>
+        )}
+      </Modal>
+
+      <div className={styles.darkModeToggle}>
+        <Switch
+          checked={darkMode}
+          onChange={() => setDarkMode(!darkMode)}
+          checkedChildren="🌙"
+          unCheckedChildren="☀️"
+        />
+      </div>
+    </div>
+  );
+};
+
+export default CourseManagement;
+
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\GradeManagement\GradeManagement.module.css:
+==================================================
+.gradeManagement {
+    padding: 20px;
+}
+
+.gradeTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.gradeTable th,
+.gradeTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: right;
+}
+
+.gradeTable th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.gradeTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.gradeTable tr:hover {
+    background-color: #f5f5f5;
+}
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\GradeManagement\GradeManagement.tsx:
+==================================================
+import React, { useState, useEffect } from "react";
+import styles from "./GradeManagement.module.css";
+
+const GradeManagement: React.FC = () => {
+  const [grades, setGrades] = useState([]);
+
+  useEffect(() => {
+    // כאן יש להוסיף קריאה לAPI לקבלת רשימת הציונים
+    // לדוגמה:
+    // fetchGrades().then(data => setGrades(data));
+  }, []);
+
+  return (
+    <div className={styles.gradeManagement}>
+      <h2>ניהול ציונים</h2>
+      <table className={styles.gradeTable}>
+        <thead>
+          <tr>
+            <th>שם התלמיד</th>
+            <th>קורס</th>
+            <th>משימה</th>
+            <th>ציון</th>
+            <th>פעולות</th>
+          </tr>
+        </thead>
+        <tbody>
+          {grades.map((grade: any) => (
+            <tr key={grade.id}>
+              <td>{grade.studentName}</td>
+              <td>{grade.course}</td>
+              <td>{grade.task}</td>
+              <td>{grade.score}</td>
+              <td>
+                <button>ערוך</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default GradeManagement;
+
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\LeadManagement\LeadManagement.module.css:
+==================================================
+.leadManagement {
+    padding: 20px;
+}
+
+.leadTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leadTable th,
+.leadTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: right;
+}
+
+.leadTable th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.leadTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.leadTable tr:hover {
+    background-color: #f5f5f5;
+}
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\LeadManagement\LeadManagement.tsx:
+==================================================
+import React, { useState, useEffect } from "react";
+import styles from "./LeadManagement.module.css";
+
+const LeadManagement: React.FC = () => {
+  const [leads, setLeads] = useState([]);
+
+  useEffect(() => {
+    // כאן יש להוסיף קריאה לAPI לקבלת רשימת הלידים
+    // לדוגמה:
+    // fetchLeads().then(data => setLeads(data));
+  }, []);
+
+  return (
+    <div className={styles.leadManagement}>
+      <h2>ניהול לידים</h2>
+      <table className={styles.leadTable}>
+        <thead>
+          <tr>
+            <th>שם</th>
+            <th>אימייל</th>
+            <th>טלפון</th>
+            <th>תאריך יצירת קשר</th>
+            <th>סטטוס</th>
+            <th>פעולות</th>
+          </tr>
+        </thead>
+        <tbody>
+          {leads.map((lead: any) => (
+            <tr key={lead.id}>
+              <td>{lead.name}</td>
+              <td>{lead.email}</td>
+              <td>{lead.phone}</td>
+              <td>{lead.contactDate}</td>
+              <td>{lead.status}</td>
+              <td>
+                <button>ערוך</button>
+                <button>מחק</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default LeadManagement;
+
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\MessageManagement\MessageManagement.module.css:
+==================================================
+.messageManagement {
+    padding: 20px;
+}
+
+.composeButton {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.messageTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.messageTable th,
+.messageTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: right;
+}
+
+.messageTable th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.messageTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.messageTable tr:hover {
+    background-color: #f5f5f5;
+}
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\MessageManagement\MessageManagement.tsx:
+==================================================
+import React, { useState, useEffect } from "react";
+import styles from "./MessageManagement.module.css";
+
+const MessageManagement: React.FC = () => {
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    // כאן יש להוסיף קריאה לAPI לקבלת רשימת ההודעות
+    // לדוגמה:
+    // fetchMessages().then(data => setMessages(data));
+  }, []);
+
+  return (
+    <div className={styles.messageManagement}>
+      <h2>ניהול הודעות</h2>
+      <button className={styles.composeButton}>כתוב הודעה חדשה</button>
+      <table className={styles.messageTable}>
+        <thead>
+          <tr>
+            <th>נושא</th>
+            <th>שולח</th>
+            <th>נמען</th>
+            <th>תאריך</th>
+            <th>פעולות</th>
+          </tr>
+        </thead>
+        <tbody>
+          {messages.map((message: any) => (
+            <tr key={message.id}>
+              <td>{message.subject}</td>
+              <td>{message.sender}</td>
+              <td>{message.recipient}</td>
+              <td>{message.date}</td>
+              <td>
+                <button>קרא</button>
+                <button>מחק</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default MessageManagement;
+
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\PaymentManagement\PaymentManagement.module.css:
+==================================================
+.paymentManagement {
+    padding: 20px;
+}
+
+.paymentTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.paymentTable th,
+.paymentTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: right;
+}
+
+.paymentTable th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.paymentTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.paymentTable tr:hover {
+    background-color: #f5f5f5;
+}
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\PaymentManagement\PaymentManagement.tsx:
+==================================================
+import React, { useState, useEffect } from "react";
+import styles from "./PaymentManagement.module.css";
+
+const PaymentManagement: React.FC = () => {
+  const [payments, setPayments] = useState([]);
+
+  useEffect(() => {
+    // כאן יש להוסיף קריאה לAPI לקבלת רשימת התשלומים
+    // לדוגמה:
+    // fetchPayments().then(data => setPayments(data));
+  }, []);
+
+  return (
+    <div className={styles.paymentManagement}>
+      <h2>ניהול תשלומים</h2>
+      <table className={styles.paymentTable}>
+        <thead>
+          <tr>
+            <th>מספר עסקה</th>
+            <th>שם המשלם</th>
+            <th>סכום</th>
+            <th>תאריך</th>
+            <th>סטטוס</th>
+            <th>פעולות</th>
+          </tr>
+        </thead>
+        <tbody>
+          {payments.map((payment: any) => (
+            <tr key={payment.id}>
+              <td>{payment.transactionId}</td>
+              <td>{payment.payerName}</td>
+              <td>{payment.amount}</td>
+              <td>{payment.date}</td>
+              <td>{payment.status}</td>
+              <td>
+                <button>פרטים</button>
+                <button>החזר כספי</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default PaymentManagement;
+
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\Statistics\Statistics.module.css:
+==================================================
+.statistics {
+    padding: 20px;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.statBox {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.statBox h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.statBox p {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4CAF50;
+    margin-bottom: 0;
+}
+
+.charts {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\Statistics\Statistics.tsx:
+==================================================
+import React, { useState, useEffect } from "react";
+import adminService from "../../services/adminService";
+import { DashboardStats } from "../../types/models";
+import styles from "./Statistics.module.css";
+
+const Statistics: React.FC = () => {
+  const [stats, setStats] = useState<DashboardStats>({
+    totalUsers: 0,
+    activeCourses: 0,
+    totalRevenue: 0,
+    newLeads: 0,
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await adminService.getDashboardStats();
+        if (response.success && response.data) {
+          setStats(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  return (
+    <div className={styles.statistics}>
+      <h2>סטטיסטיקות</h2>
+      <div className={styles.statsGrid}>
+        <div className={styles.statBox}>
+          <h3>סה"כ משתמשים</h3>
+          <p>{stats.totalUsers}</p>
+        </div>
+        <div className={styles.statBox}>
+          <h3>קורסים פעילים</h3>
+          <p>{stats.activeCourses}</p>
+        </div>
+        <div className={styles.statBox}>
+          <h3>סך הכנסות</h3>
+          <p>₪{stats.totalRevenue.toFixed(2)}</p>
+        </div>
+        <div className={styles.statBox}>
+          <h3>לידים חדשים</h3>
+          <p>{stats.newLeads}</p>
+        </div>
+      </div>
+      <div className={styles.charts}>
+        {/* כאן תוכל להוסיף גרפים ותרשימים בהמשך */}
+        <p>כאן יוצגו גרפים ותרשימים נוספים</p>
+      </div>
+    </div>
+  );
+};
+
+export default Statistics;
+
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\SystemSettings\SystemSettings.module.css:
+==================================================
+.systemSettings {
+    padding: 20px;
+}
+
+.formGroup {
+    margin-bottom: 15px;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.formGroup input[type="text"],
+.formGroup input[type="email"],
+.formGroup input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.formGroup input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.saveButton {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.saveButton:hover {
+    background-color: #45a049;
+}
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\SystemSettings\SystemSettings.tsx:
+==================================================
+import React, { useState, useEffect } from "react";
+import styles from "./SystemSettings.module.css";
+
+const SystemSettings: React.FC = () => {
+  const [settings, setSettings] = useState({
+    siteName: "",
+    adminEmail: "",
+    maxUploadSize: 0,
+    allowRegistration: false,
+    maintenanceMode: false,
+  });
+
+  useEffect(() => {
+    // כאן יש להוסיף קריאה לAPI לקבלת ההגדרות הנוכחיות
+    // לדוגמה:
+    // fetchSettings().then(data => setSettings(data));
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setSettings((prevSettings) => ({
+      ...prevSettings,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // כאן יש להוסיף קריאה לAPI לשמירת ההגדרות
+    // לדוגמה:
+    // saveSettings(settings).then(() => alert('ההגדרות נשמרו בהצלחה'));
+  };
+
+  return (
+    <div className={styles.systemSettings}>
+      <h2>הגדרות מערכת</h2>
+      <form onSubmit={handleSubmit}>
+        <div className={styles.formGroup}>
+          <label htmlFor="siteName">שם האתר:</label>
+          <input
+            type="text"
+            id="siteName"
+            name="siteName"
+            value={settings.siteName}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="adminEmail">אימייל מנהל:</label>
+          <input
+            type="email"
+            id="adminEmail"
+            name="adminEmail"
+            value={settings.adminEmail}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="maxUploadSize">גודל העלאה מקסימלי (MB):</label>
+          <input
+            type="number"
+            id="maxUploadSize"
+            name="maxUploadSize"
+            value={settings.maxUploadSize}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label>
+            <input
+              type="checkbox"
+              name="allowRegistration"
+              checked={settings.allowRegistration}
+              onChange={handleInputChange}
+            />
+            אפשר הרשמה לאתר
+          </label>
+        </div>
+        <div className={styles.formGroup}>
+          <label>
+            <input
+              type="checkbox"
+              name="maintenanceMode"
+              checked={settings.maintenanceMode}
+              onChange={handleInputChange}
+            />
+            מצב תחזוקה
+          </label>
+        </div>
+        <button type="submit" className={styles.saveButton}>
+          שמור הגדרות
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default SystemSettings;
+
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\TaskManagement\TaskManagement.module.css:
+==================================================
+.taskManagement {
+    padding: 20px;
+}
+
+.addButton {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.taskTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.taskTable th,
+.taskTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: right;
+}
+
+.taskTable th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.taskTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.taskTable tr:hover {
+    background-color: #f5f5f5;
+}
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\TaskManagement\TaskManagement.tsx:
+==================================================
+import React, { useState, useEffect } from "react";
+import styles from "./TaskManagement.module.css";
+
+const TaskManagement: React.FC = () => {
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    // כאן יש להוסיף קריאה לAPI לקבלת רשימת המשימות
+    // לדוגמה:
+    // fetchTasks().then(data => setTasks(data));
+  }, []);
+
+  return (
+    <div className={styles.taskManagement}>
+      <h2>ניהול משימות</h2>
+      <button className={styles.addButton}>הוסף משימה חדשה</button>
+      <table className={styles.taskTable}>
+        <thead>
+          <tr>
+            <th>שם המשימה</th>
+            <th>קורס</th>
+            <th>תאריך יעד</th>
+            <th>סטטוס</th>
+            <th>פעולות</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tasks.map((task: any) => (
+            <tr key={task.id}>
+              <td>{task.name}</td>
+              <td>{task.course}</td>
+              <td>{task.dueDate}</td>
+              <td>{task.status}</td>
+              <td>
+                <button>ערוך</button>
+                <button>מחק</button>
+                <button>צפה בהגשות</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default TaskManagement;
+
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\UserManagement\UserManagement.module.css:
+==================================================
+/* UserManagement.module.css */
+
+.userManagement {
+    padding: 30px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.pageTitle {
+    font-size: 28px;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.actionBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.actionBar button {
+    margin-right: 15px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.actionBar button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.searchInput {
+    width: 250px;
+    transition: all 0.3s ease;
+}
+
+.searchInput:focus {
+    width: 300px;
+}
+
+.roleTag {
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.statusTag {
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.groupTag {
+    margin-right: 8px;
+    margin-bottom: 8px;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 13px;
+    transition: all 0.3s ease;
+}
+
+.groupTag:hover {
+    transform: translateY(-2px);
+}
+
+.addGroupTag {
+    background: #fff;
+    border-style: dashed;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.addGroupTag:hover {
+    background: #f1f3f5;
+}
+
+.actionButton {
+    margin-right: 8px;
+    transition: all 0.3s ease;
+}
+
+.actionButton:hover {
+    transform: scale(1.1);
+}
+
+.userTable {
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.userTable th {
+    background-color: #f1f3f5;
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+.userTable td {
+    padding: 16px 12px;
+}
+
+.userTable tr:hover {
+    background-color: #f8f9fa;
+}
+
+.modalTitle {
+    font-size: 24px;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.modalForm {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.modalFormItem {
+    margin-bottom: 20px;
+}
+
+.modalFormLabel {
+    font-weight: bold;
+    color: #34495e;
+}
+
+.modalSubmitButton {
+    width: 100%;
+    height: 40px;
+    font-size: 16px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .actionBar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .actionBar button,
+    .searchInput {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .userTable {
+        font-size: 14px;
+    }
+}
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\components\UserManagement\UserManagement.tsx:
+==================================================
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  Table,
+  Input,
+  Button,
+  Modal,
+  Form,
+  Select,
+  message,
+  Upload,
+  Tooltip,
+} from "antd";
+import {
+  UploadOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  LockOutlined,
+  UnlockOutlined,
+} from "@ant-design/icons";
+import { useAdmin } from "../../context/AdminContext";
+import adminService from "../../services/adminService";
+import { User, PaginatedResponse } from "../../types/models";
+import styles from "./UserManagement.module.css";
+
+const { Option } = Select;
+
+const UserManagement: React.FC = () => {
+  const { t } = useTranslation();
+  const { isAuthenticated } = useAdmin();
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchUsers();
+    }
+  }, [isAuthenticated, currentPage, pageSize, searchTerm]);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const response = await adminService.getUsers(currentPage, pageSize, searchTerm);
+      setUsers(response.data); // זה אמור להיות תקין עכשיו
+      setTotalUsers(response.totalCount);
+    } catch (error) {
+      message.error(t("userManagement.fetchError"));
+      setUsers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const showModal = (user?: User) => {
+    setEditingUser(user || null);
+    setIsModalVisible(true);
+    if (user) {
+      form.setFieldsValue(user);
+    } else {
+      form.resetFields();
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setEditingUser(null);
+    form.resetFields();
+  };
+
+  const handleSubmit = async (values: Partial<User>) => {
+    try {
+      if (editingUser) {
+        await adminService.updateUser(editingUser._id, values);
+        message.success(t("userManagement.updateSuccess"));
+      } else {
+        await adminService.createUser(values);
+        message.success(t("userManagement.createSuccess"));
+      }
+      setIsModalVisible(false);
+      fetchUsers();
+    } catch (error) {
+      message.error(t("userManagement.submitError"));
+    }
+  };
+
+  const handleDelete = async (userId: string) => {
+    try {
+      await adminService.deleteUser(userId);
+      message.success(t("userManagement.deleteSuccess"));
+      fetchUsers();
+    } catch (error) {
+      message.error(t("userManagement.deleteError"));
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const blob = await adminService.exportUsers();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "users.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+    } catch (error) {
+      message.error(t("userManagement.exportError"));
+    }
+  };
+
+  const handleImport = async (file: File) => {
+    try {
+      await adminService.importUsers(file);
+      message.success(t("userManagement.importSuccess"));
+      fetchUsers();
+    } catch (error) {
+      message.error(t("userManagement.importError"));
+    }
+  };
+
+  const handleStatusChange = async (
+    userId: string,
+    newStatus: "active" | "locked"
+  ) => {
+    try {
+      await adminService.updateUserStatus(userId, newStatus);
+      message.success(t("userManagement.statusUpdateSuccess"));
+      fetchUsers();
+    } catch (error) {
+      message.error(t("userManagement.statusUpdateError"));
+    }
+  };
+
+  const columns = [
+    {
+      title: t("userManagement.name"),
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: t("userManagement.email"),
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: t("userManagement.role"),
+      dataIndex: ["role", "name"],
+      key: "role",
+    },
+    {
+      title: t("userManagement.status"),
+      dataIndex: "status",
+      key: "status",
+      render: (status: string, record: User) => (
+        <Select
+          value={status}
+          onChange={(value) =>
+            handleStatusChange(record._id, value as "active" | "locked")
+          }
+        >
+          <Option value="active">{t("userManagement.active")}</Option>
+          <Option value="locked">{t("userManagement.locked")}</Option>
+        </Select>
+      ),
+    },
+    {
+      title: t("userManagement.actions"),
+      key: "actions",
+      render: (_: any, record: User) => (
+        <span>
+          <Tooltip title={t("userManagement.edit")}>
+            <Button icon={<EditOutlined />} onClick={() => showModal(record)} />
+          </Tooltip>
+          <Tooltip title={t("userManagement.delete")}>
+            <Button
+              icon={<DeleteOutlined />}
+              onClick={() => handleDelete(record._id)}
+              danger
+            />
+          </Tooltip>
+          <Tooltip
+            title={
+              record.status === "active"
+                ? t("userManagement.lock")
+                : t("userManagement.unlock")
+            }
+          >
+            <Button
+              icon={
+                record.status === "active" ? (
+                  <LockOutlined />
+                ) : (
+                  <UnlockOutlined />
+                )
+              }
+              onClick={() =>
+                handleStatusChange(
+                  record._id,
+                  record.status === "active" ? "locked" : "active"
+                )
+              }
+            />
+          </Tooltip>
+        </span>
+      ),
+    },
+  ];
+
+  return (
+    <div className={styles.userManagement}>
+      <h1 className={styles.pageTitle}>{t("userManagement.title")}</h1>
+      <div className={styles.actionBar}>
+        <Input.Search
+          placeholder={t("userManagement.search")}
+          onSearch={handleSearch}
+          className={styles.searchInput}
+        />
+        <Button onClick={() => showModal()}>
+          {t("userManagement.addUser")}
+        </Button>
+        <Button onClick={handleExport}>{t("userManagement.export")}</Button>
+        <Upload
+          accept=".csv"
+          showUploadList={false}
+          beforeUpload={(file) => {
+            handleImport(file);
+            return false;
+          }}
+        >
+          <Button icon={<UploadOutlined />}>
+            {t("userManagement.import")}
+          </Button>
+        </Upload>
+      </div>
+      <Table
+        dataSource={users}
+        columns={columns}
+        rowKey="_id"
+        loading={loading}
+        pagination={{
+          current: currentPage,
+          pageSize: pageSize,
+          total: totalUsers,
+          onChange: (page) => setCurrentPage(page),
+          onShowSizeChange: (_, size) => setPageSize(size),
+        }}
+        className={styles.userTable}
+      />
+      <Modal
+        title={
+          editingUser
+            ? t("userManagement.editUser")
+            : t("userManagement.addUser")
+        }
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <Form form={form} onFinish={handleSubmit} layout="vertical">
+          <Form.Item
+            name="name"
+            label={t("userManagement.name")}
+            rules={[
+              { required: true, message: t("userManagement.nameRequired") },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="email"
+            label={t("userManagement.email")}
+            rules={[
+              { required: true, message: t("userManagement.emailRequired") },
+              { type: "email", message: t("userManagement.invalidEmail") },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name={["role", "name"]}
+            label={t("userManagement.role")}
+            rules={[
+              { required: true, message: t("userManagement.roleRequired") },
+            ]}
+          >
+            <Select>
+              <Option value="user">{t("userManagement.roleUser")}</Option>
+              <Option value="admin">{t("userManagement.roleAdmin")}</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              {editingUser
+                ? t("userManagement.updateUser")
+                : t("userManagement.createUser")}
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
+  );
+};
+
+export default UserManagement;
+
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\config\adminConfig.ts:
+==================================================
+
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\context\AdminContext.tsx:
+==================================================
+import React, { createContext, useContext, ReactNode } from "react";
+import useAdminAuth from "../hooks/useAdminAuth";
+
+interface AdminContextType {
+  isAuthenticated: boolean;
+  loading: boolean;
+  login: (username: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+}
+
+const AdminContext = createContext<AdminContextType | undefined>(undefined);
+
+export const AdminProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const auth = useAdminAuth();
+
+  return <AdminContext.Provider value={auth}>{children}</AdminContext.Provider>;
+};
+
+export const useAdmin = () => {
+  const context = useContext(AdminContext);
+  if (context === undefined) {
+    throw new Error("useAdmin must be used within an AdminProvider");
+  }
+  return context;
+};
+
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\hooks\useAdminAuth.ts:
+==================================================
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { message } from 'antd';
+import adminApi from '../adminApi';
+
+export const useAdminAuth = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
+  const checkAuthStatus = async () => {
+    try {
+      const response = await adminApi.get('/auth/check');
+      setIsAuthenticated(response.data.isAuthenticated);
+    } catch (error) {
+      setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const login = async (username: string, password: string) => {
+    try {
+      const response = await adminApi.post('/auth/login', { username, password });
+      localStorage.setItem('adminToken', response.data.token);
+      setIsAuthenticated(true);
+      navigate('/admin/dashboard');
+    } catch (error) {
+      message.error('Login failed. Please check your credentials.');
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await adminApi.post('/auth/logout');
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      localStorage.removeItem('adminToken');
+      setIsAuthenticated(false);
+      navigate('/admin/login');
+    }
+  };
+
+  return { isAuthenticated, loading, login, logout };
+};
+
+export default useAdminAuth;
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\services\adminService.ts:
+==================================================
+import adminApi from '../adminApi';
+import { User, PaginatedResponse, ApiResponse, UserStats, UserActivity, SystemSettings, DashboardStats } from '../types/models';
+
+  // User Management
+  const adminService = {
+    getUsers: async (page: number = 1, limit: number = 10, search?: string): Promise<PaginatedResponse<User>> => {
+      const response = await adminApi.get<PaginatedResponse<User>>('/admin/users', {
+        params: { page, limit, search }
+      });
+      return response.data;
+    },
+
+  createUser: async (userData: Partial<User>): Promise<ApiResponse<User>> => {
+    const response = await adminApi.post<ApiResponse<User>>('/admin/users', userData);
+    return response.data;
+  },
+
+  updateUser: async (userId: string, userData: Partial<User>): Promise<ApiResponse<User>> => {
+    const response = await adminApi.put<ApiResponse<User>>(`/admin/users/${userId}`, userData);
+    return response.data;
+  },
+
+  deleteUser: async (userId: string): Promise<ApiResponse<void>> => {
+    const response = await adminApi.delete<ApiResponse<void>>(`/admin/users/${userId}`);
+    return response.data;
+  },
+
+  exportUsers: async (): Promise<Blob> => {
+    const response = await adminApi.get('/admin/users/export', { responseType: 'blob' });
+    return response.data;
+  },
+
+  importUsers: async (file: File): Promise<ApiResponse<void>> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await adminApi.post<ApiResponse<void>>('/admin/users/import', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+  },
+
+  resetUserPassword: async (userId: string): Promise<ApiResponse<void>> => {
+    const response = await adminApi.post<ApiResponse<void>>(`/admin/users/${userId}/reset-password`);
+    return response.data;
+  },
+
+  getUserActivity: async (userId: string): Promise<ApiResponse<UserActivity[]>> => {
+    const response = await adminApi.get<ApiResponse<UserActivity[]>>(`/admin/users/${userId}/activity`);
+    return response.data;
+  },
+
+  updateUserStatus: async (userId: string, status: 'active' | 'locked'): Promise<ApiResponse<User>> => {
+    const response = await adminApi.patch<ApiResponse<User>>(`/admin/users/${userId}/status`, { status });
+    return response.data;
+  },
+
+  getUserStats: async (): Promise<ApiResponse<UserStats>> => {
+    const response = await adminApi.get<ApiResponse<UserStats>>('/admin/users/stats');
+    return response.data;
+  },
+
+  // Course Management
+  getCourses: async (page: number = 1, limit: number = 10, search?: string): Promise<PaginatedResponse<any[]>> => {
+    const response = await adminApi.get<PaginatedResponse<any[]>>('/admin/courses', {
+      params: { page, limit, search }
+    });
+    return response.data;
+  },
+
+  createCourse: async (courseData: any): Promise<ApiResponse<any>> => {
+    const response = await adminApi.post<ApiResponse<any>>('/admin/courses', courseData);
+    return response.data;
+  },
+
+  updateCourse: async (courseId: string, courseData: any): Promise<ApiResponse<any>> => {
+    const response = await adminApi.put<ApiResponse<any>>(`/admin/courses/${courseId}`, courseData);
+    return response.data;
+  },
+
+  deleteCourse: async (courseId: string): Promise<ApiResponse<void>> => {
+    const response = await adminApi.delete<ApiResponse<void>>(`/admin/courses/${courseId}`);
+    return response.data;
+  },
+
+  // System Settings
+  getSystemSettings: async (): Promise<ApiResponse<SystemSettings>> => {
+    const response = await adminApi.get<ApiResponse<SystemSettings>>('/admin/settings');
+    return response.data;
+  },
+
+  updateSystemSettings: async (settings: Partial<SystemSettings>): Promise<ApiResponse<SystemSettings>> => {
+    const response = await adminApi.put<ApiResponse<SystemSettings>>('/admin/settings', settings);
+    return response.data;
+  },
+
+  // Dashboard Statistics
+  getDashboardStats: async (): Promise<ApiResponse<DashboardStats>> => {
+    const response = await adminApi.get<ApiResponse<DashboardStats>>('/admin/dashboard/stats');
+    return response.data;
+  },
+
+
+  // Logs
+  getSystemLogs: async (page: number = 1, limit: number = 50): Promise<PaginatedResponse<any[]>> => {
+    const response = await adminApi.get<PaginatedResponse<any[]>>('/admin/logs', {
+      params: { page, limit }
+    });
+    return response.data;
+  },
+
+  // Backup and Restore
+  createBackup: async (): Promise<ApiResponse<void>> => {
+    const response = await adminApi.post<ApiResponse<void>>('/admin/backup');
+    return response.data;
+  },
+
+  restoreBackup: async (backupFile: File): Promise<ApiResponse<void>> => {
+    const formData = new FormData();
+    formData.append('backupFile', backupFile);
+    const response = await adminApi.post<ApiResponse<void>>('/admin/restore', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+  },
+
+  // Additional helper functions can be added here as needed
+};
+
+export default adminService;
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\styles\adminStyles.module.css:
+==================================================
+
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\types\models.ts:
+==================================================
+// src/types/models.ts
+
+export interface UserRole {
+    name: 'user' | 'admin';
+    permissions: string[];
+  }
+  
+  export interface User {
+    _id: string;
+    name: string;
+    email: string;
+    username: string;
+    role: UserRole;
+    groups: string[];
+    courses: string[];
+    twoFactorEnabled: boolean;
+    isEmailVerified: boolean;
+    lastLogin: string; // ISO date string
+    status: 'active' | 'locked';
+    createdAt: string; // ISO date string
+    updatedAt: string; // ISO date string
+  }
+  
+  export interface UserManagementData {
+    _id: string;
+    name: string;
+    email: string;
+    username: string;
+    role: UserRole;
+    status: 'active' | 'locked';
+    lastLogin: string; // ISO date string
+    createdAt: string; // ISO date string
+  }
+  
+  export interface UserProfile {
+    name: string;
+    email: string;
+    username: string;
+    groups: string[];
+    role: UserRole;
+  }
+  
+  export interface UserStats {
+    totalUsers: number;
+    activeUsers: number;
+    lockedUsers: number;
+    usersCreatedLastMonth: number;
+  }
+  
+  export interface UserActivity {
+    _id: string;
+    userId: string;
+    action: string;
+    details: string;
+    timestamp: string; // ISO date string
+  }
+  export interface PaginatedResponse<T> {
+    data: T[]; // וודא שזה מוגדר כמערך
+    totalCount: number;
+    pageSize: number;
+    currentPage: number;
+    totalPages: number;
+  }
+  
+  export interface ApiResponse<T> {
+    success: boolean;
+    data?: T;
+    error?: string;
+    message?: string;
+  }
+  
+  export interface LoginResponse {
+    token: string;
+    user: User;
+  }
+  
+  export interface SystemSettings {
+    siteName: string;
+    siteDescription: string;
+    contactEmail: string;
+    maxUploadSize: number;
+    allowRegistration: boolean;
+    maintenanceMode: boolean;
+  }
+  export interface DashboardStats {
+    totalUsers: number;
+    activeCourses: number;
+    totalRevenue: number;
+    newLeads: number;
+  }
+  // ניתן להוסיף טיפוסים נוספים לפי הצורך
+
+==================================================
+Contents of C:\Users\eytan\Desktop\hebrewclubweb\clientnew\src\admin\utils\adminUtils.ts:
+==================================================
+

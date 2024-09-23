@@ -1,0 +1,130 @@
+App.module.css
+App.tsx
+i18n.ts
+index.css
+main.tsx
+vite-env.d.ts
+.dist
+admin
+  adminApi.ts
+  adminconfig.ts
+  AdminDashboard.module.css
+  AdminDashboard.tsx
+  directory_analysis.txt
+  permissions.ts
+  .dist
+  common
+  components
+    CourseManagement
+      CourseManagement.module.css
+      CourseManagement.tsx
+    GradeManagement
+      GradeManagement.module.css
+      GradeManagement.tsx
+    LeadManagement
+      LeadManagement.module.css
+      LeadManagement.tsx
+    MessageManagement
+      MessageManagement.module.css
+      MessageManagement.tsx
+    PaymentManagement
+      PaymentManagement.module.css
+      PaymentManagement.tsx
+    Statistics
+      Statistics.module.css
+      Statistics.tsx
+    SystemSettings
+      SystemSettings.module.css
+      SystemSettings.tsx
+    TaskManagement
+      TaskManagement.module.css
+      TaskManagement.tsx
+    UserManagement
+      UserManagement.module.css
+      UserManagement.tsx
+  config
+    adminConfig.ts
+  context
+    AdminContext.tsx
+  hooks
+    useAdminAuth.ts
+  services
+    adminService.ts
+  styles
+    adminStyles.module.css
+  types
+    models.ts
+  utils
+    adminUtils.ts
+components
+  .dist
+  AboutUs
+    AboutUs.module.css
+    AboutUs.tsx
+  AdminDashboard
+    AdminDashboard.tsx
+  Auth
+    LoginPage.module.css
+    LoginPage.tsx
+    RegisterPage.module.css
+    RegisterPage.tsx
+    .dist
+  Blog
+    Blog.module.css
+    Blog.tsx
+  ContactForm
+    ContactForm.module.css
+    ContactForm.tsx
+  Courses
+    Courses.module.css
+    Courses.tsx
+    EnrollModal.module.css
+    EnrollModal.tsx
+    .dist
+  Footer
+    Footer.module.css
+    Footer.tsx
+  Header
+    Header.module.css
+    Header.tsx
+    UserDashboard.module.css
+    UserDashboard.tsx
+    UserDropdown.module.css
+    UserDropdown.tsx
+  HeroSection
+    HeroSection.module.css
+    HeroSection.tsx
+  LeadForm
+    LeadForm.module.css
+    LeadForm.tsx
+  LoadingSpinner
+    LoadingSpinner.module.css
+    LoadingSpinner.tsx
+  Testimonials
+    Testimonials.module.css
+    Testimonials.tsx
+  VideoTestimonials
+    VideoTestimonials.module.css
+    VideoTestimonials.tsx
+context
+  AuthContext.tsx
+hooks
+  useApi.ts
+pages
+  .dist
+  AdminPanel
+    AdminPanel.module.css
+    AdminPanel.tsx
+  HomePage
+    HomePage.module.css
+    HomePage.tsx
+services
+  api.ts
+  auth.ts
+styles
+  global.css
+  variables.css
+types
+  models.ts
+utils
+  devToolsHandler.ts

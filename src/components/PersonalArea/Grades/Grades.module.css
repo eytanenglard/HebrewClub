@@ -1,0 +1,40 @@
+.grades {
+    padding: 20px;
+}
+
+.gradeTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.gradeTable th,
+.gradeTable td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.gradeTable th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.gradeTable tr:hover {
+    background-color: #f1f3f5;
+}
+
+.courseColumn {
+    width: 30%;
+}
+
+.assignmentColumn {
+    width: 40%;
+}
+
+.scoreColumn {
+    width: 15%;
+}
+
+.dateColumn {
+    width: 15%;
+}

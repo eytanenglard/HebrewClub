@@ -1,0 +1,307 @@
+.leadManagement {
+    padding: 24px;
+    background-color: #f0f2f5;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    background-color: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.searchInput {
+    width: 300px;
+}
+
+.leadList {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    padding: 16px;
+    margin-top: 24px;
+}
+
+.statsRow {
+    margin-bottom: 24px;
+}
+
+.leadDescription {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.leadDescription p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.leadDescription p :global(.anticon) {
+    margin-right: 8px;
+    color: #1890ff;
+}
+
+.leadDetails {
+    text-align: center;
+}
+
+.leadDetails h2 {
+    margin-top: 16px;
+    margin-bottom: 24px;
+}
+
+.leadDetails p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.leadDetails :global(.anticon) {
+    margin-right: 8px;
+    color: #1890ff;
+}
+
+/* List item styles */
+:global(.ant-list-item) {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    padding: 16px !important;
+    margin-bottom: 16px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+}
+
+:global(.ant-list-item:hover) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+:global(.ant-list-item-meta-title) {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+:global(.ant-list-item-meta-description) {
+    font-size: 14px;
+}
+
+/* Avatar styles */
+:global(.ant-avatar) {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Button styles */
+:global(.ant-btn) {
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+:global(.ant-btn-primary) {
+    background-color: #1890ff;
+    border-color: #1890ff;
+}
+
+:global(.ant-btn-primary:hover) {
+    background-color: #40a9ff;
+    border-color: #40a9ff;
+}
+
+/* Modal styles */
+:global(.ant-modal-content) {
+    border-radius: 8px;
+}
+
+:global(.ant-modal-header) {
+    border-radius: 8px 8px 0 0;
+}
+
+:global(.ant-modal-footer) {
+    border-radius: 0 0 8px 8px;
+}
+
+/* Form styles */
+:global(.ant-form-item-label > label) {
+    font-weight: 600;
+}
+
+:global(.ant-input),
+:global(.ant-select-selector) {
+    border-radius: 4px;
+}
+
+/* Tag styles */
+:global(.ant-tag) {
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-weight: 500;
+}
+
+/* Tooltip styles */
+:global(.ant-tooltip) {
+    max-width: 300px;
+}
+
+/* Drawer styles */
+:global(.ant-drawer-content) {
+    border-radius: 0 8px 8px 0;
+}
+
+:global(.ant-drawer-header) {
+    background-color: #f0f2f5;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+:global(.ant-drawer-title) {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Timeline styles */
+:global(.ant-timeline-item-content) {
+    font-size: 14px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .actions {
+        margin-top: 16px;
+        flex-wrap: wrap;
+    }
+
+    .searchInput {
+        width: 100%;
+    }
+
+    :global(.ant-list-item-action) {
+        margin-top: 16px;
+    }
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply animation to list items */
+:global(.ant-list-item) {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Custom scrollbar styles */
+.leadList::-webkit-scrollbar {
+    width: 8px;
+}
+
+.leadList::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.leadList::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.leadList::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Status tag styles */
+:global(.ant-tag-blue) {
+    background-color: #e6f7ff;
+    border-color: #91d5ff;
+    color: #1890ff;
+}
+
+:global(.ant-tag-orange) {
+    background-color: #fff7e6;
+    border-color: #ffd591;
+    color: #fa8c16;
+}
+
+:global(.ant-tag-green) {
+    background-color: #f6ffed;
+    border-color: #b7eb8f;
+    color: #52c41a;
+}
+
+:global(.ant-tag-red) {
+    background-color: #fff1f0;
+    border-color: #ffa39e;
+    color: #f5222d;
+}
+
+/* Card styles for statistics */
+:global(.ant-card) {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+    transition: all 0.3s ease;
+}
+
+:global(.ant-card:hover) {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+:global(.ant-statistic-title) {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.85);
+}
+
+:global(.ant-statistic-content) {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1890ff;
+}
+
+/* Date picker styles */
+:global(.ant-picker) {
+    border-radius: 4px;
+}
+
+:global(.ant-picker:hover),
+:global(.ant-picker-focused) {
+    border-color: #40a9ff;
+}
+
+/* Select styles */
+:global(.ant-select-selector) {
+    border-radius: 4px !important;
+}
+
+:global(.ant-select:hover .ant-select-selector),
+:global(.ant-select-focused .ant-select-selector) {
+    border-color: #40a9ff !important;
+}

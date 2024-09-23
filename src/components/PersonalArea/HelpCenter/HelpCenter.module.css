@@ -1,0 +1,94 @@
+.helpCenter {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: var(--card-background);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+}
+
+.title {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.searchBar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    background-color: var(--background-color);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+}
+
+.searchIcon {
+    color: var(--text-color);
+    margin-right: 0.5rem;
+}
+
+.searchInput {
+    flex-grow: 1;
+    border: none;
+    background-color: transparent;
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
+.searchInput:focus {
+    outline: none;
+}
+
+.faqSection {
+    margin-bottom: 2rem;
+}
+
+.faqItem {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: var(--background-color);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.faqItem:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.question {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.questionIcon {
+    margin-right: 0.5rem;
+}
+
+.answer {
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.contactSupport {
+    text-align: center;
+}
+
+.contactButton {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.contactButton:hover {
+    background-color: var(--secondary-color);
+}

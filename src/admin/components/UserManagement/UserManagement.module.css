@@ -1,0 +1,876 @@
+/* Main container */
+.userManagement {
+    padding: 32px;
+    background-color: #f0f2f5;
+    min-height: 100vh;
+}
+
+/* Header styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    background-color: #fff;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header h2 {
+    font-size: 28px;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+/* Action buttons */
+.actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.searchInput {
+    width: 300px;
+}
+
+/* User list styles */
+.userList {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    margin-top: 32px;
+}
+
+/* Stats row */
+.statsRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.statCard {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    flex: 1;
+    min-width: 200px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.statCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.statCard h3 {
+    font-size: 18px;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.statCard p {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1890ff;
+    margin: 0;
+}
+
+/* User description */
+.userDescription {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.userDescription p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 14px;
+}
+
+.userDescription p :global(.anticon) {
+    margin-right: 8px;
+    color: #1890ff;
+}
+
+/* Course list */
+.courseList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.courseTag {
+    display: flex;
+    align-items: center;
+    background-color: #f0f5ff;
+    border: 1px solid #d6e4ff;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 14px;
+    color: #1890ff;
+    transition: all 0.3s ease;
+}
+
+.courseTag:hover {
+    background-color: #d6e4ff;
+}
+
+.courseTag span {
+    margin-right: 6px;
+}
+
+/* User details */
+.userDetails {
+    text-align: center;
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.userDetails h2 {
+    margin-top: 16px;
+    margin-bottom: 24px;
+    font-size: 24px;
+    color: #1a1a1a;
+}
+
+.userDetails p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.userDetails :global(.anticon) {
+    margin-right: 8px;
+    color: #1890ff;
+}
+
+/* List item styles */
+:global(.ant-list-item) {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    padding: 20px !important;
+    margin-bottom: 16px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.09);
+}
+
+:global(.ant-list-item:hover) {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+:global(.ant-list-item-meta-title) {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1a1a1a;
+}
+
+:global(.ant-list-item-meta-description) {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.45);
+}
+
+/* Avatar styles */
+:global(.ant-avatar) {
+    font-size: 20px;
+    font-weight: bold;
+    background-color: #1890ff;
+}
+
+/* Button styles */
+:global(.ant-btn) {
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+:global(.ant-btn-primary) {
+    background-color: #1890ff;
+    border-color: #1890ff;
+}
+
+:global(.ant-btn-primary:hover) {
+    background-color: #40a9ff;
+    border-color: #40a9ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(24, 144, 255, 0.3);
+}
+
+/* Modal styles */
+:global(.ant-modal-content) {
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+:global(.ant-modal-header) {
+    border-radius: 12px 12px 0 0;
+    background-color: #f0f2f5;
+    padding: 20px 24px;
+}
+
+:global(.ant-modal-title) {
+    font-size: 20px;
+    color: #1a1a1a;
+}
+
+:global(.ant-modal-body) {
+    padding: 24px;
+}
+
+:global(.ant-modal-footer) {
+    border-radius: 0 0 12px 12px;
+    padding: 20px 24px;
+}
+
+/* Form styles */
+:global(.ant-form-item-label > label) {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+:global(.ant-input),
+:global(.ant-select-selector) {
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+:global(.ant-input:hover),
+:global(.ant-select-selector:hover) {
+    border-color: #40a9ff;
+}
+
+:global(.ant-input:focus),
+:global(.ant-select-selector:focus) {
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* Tag styles */
+:global(.ant-tag) {
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-weight: 500;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+:global(.ant-tag:hover) {
+    transform: translateY(-2px);
+}
+
+/* Tooltip styles */
+:global(.ant-tooltip) {
+    max-width: 300px;
+}
+
+:global(.ant-tooltip-inner) {
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+
+/* Drawer styles */
+:global(.ant-drawer-content) {
+    border-radius: 0 12px 12px 0;
+}
+
+:global(.ant-drawer-header) {
+    background-color: #f0f2f5;
+    border-bottom: 1px solid #e8e8e8;
+    padding: 20px 24px;
+}
+
+:global(.ant-drawer-title) {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+/* Timeline styles */
+:global(.ant-timeline-item-content) {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.65);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .userManagement {
+        padding: 16px;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px;
+    }
+
+    .header h2 {
+        margin-bottom: 16px;
+    }
+
+    .actions {
+        margin-top: 16px;
+        flex-wrap: wrap;
+    }
+
+    .searchInput {
+        width: 100%;
+    }
+
+    .statCard {
+        min-width: 100%;
+    }
+
+    :global(.ant-list-item-action) {
+        margin-top: 16px;
+    }
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply animation to list items */
+:global(.ant-list-item) {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Custom scrollbar styles */
+.userList::-webkit-scrollbar {
+    width: 8px;
+}
+
+.userList::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.userList::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.userList::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Status tag styles */
+:global(.ant-tag-green) {
+    background-color: #f6ffed;
+    border-color: #b7eb8f;
+    color: #52c41a;
+}
+
+:global(.ant-tag-orange) {
+    background-color: #fff7e6;
+    border-color: #ffd591;
+    color: #fa8c16;
+}
+
+:global(.ant-tag-red) {
+    background-color: #fff1f0;
+    border-color: #ffa39e;
+    color: #f5222d;
+}
+
+/* Card styles for statistics */
+:global(.ant-card) {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.09);
+    transition: all 0.3s ease;
+}
+
+:global(.ant-card:hover) {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+:global(.ant-statistic-title) {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.85);
+}
+
+:global(.ant-statistic-content) {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1890ff;
+}
+
+/* Date picker styles */
+:global(.ant-picker) {
+    border-radius: 6px;
+}
+
+:global(.ant-picker:hover),
+:global(.ant-picker-focused) {
+    border-color: #40a9ff;
+}
+
+/* Select styles */
+:global(.ant-select-selector) {
+    border-radius: 6px !important;
+}
+
+:global(.ant-select:hover .ant-select-selector),
+:global(.ant-select-focused .ant-select-selector) {
+    border-color: #40a9ff !important;
+}
+
+/* Ensure the Select component for adding courses is visible */
+:global(.ant-select) {
+    min-width: 200px;
+    margin-top: 12px;
+}
+
+/* Table styles */
+:global(.ant-table-wrapper) {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+:global(.ant-table-thead > tr > th) {
+    background-color: #f0f2f5;
+    color: #1a1a1a;
+    font-weight: 600;
+    padding: 16px;
+}
+
+:global(.ant-table-tbody > tr > td) {
+    padding: 16px;
+}
+
+:global(.ant-table-tbody > tr:hover > td) {
+    background-color: #f0f7ff;
+}
+
+/* Pagination styles */
+:global(.ant-pagination-item) {
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+:global(.ant-pagination-item-active) {
+    background-color: #1890ff;
+    border-color: #1890ff;
+}
+
+:global(.ant-pagination-item-active a) {
+    color: #fff;
+}
+
+/* Switch styles */
+:global(.ant-switch) {
+    background-color: rgba(0, 0, 0, 0.25);
+}
+
+:global(.ant-switch-checked) {
+    background-color: #1890ff;
+}
+
+/* Popconfirm styles */
+:global(.ant-popover-inner) {
+    border-radius: 8px;
+}
+
+:global(.ant-popover-message) {
+    padding: 12px 16px;
+}
+
+:global(.ant-popover-buttons) {
+    padding: 8px 16px;
+}
+
+/* Form error styles */
+:global(.ant-form-item-has-error .ant-input),
+:global(.ant-form-item-has-error .ant-input-affix-wrapper),
+:global(.ant-form-item-has-error .ant-input:hover),
+:global(.ant-form-item-has-error .ant-input-affix-wrapper:hover) {
+    border-color: #ff4d4f;
+}
+
+:global(.ant-form-item-has-error .ant-input:focus),
+:global(.ant-form-item-has-error .ant-input-affix-wrapper:focus) {
+    border-color: #ff4d4f;
+    box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+}
+
+/* Continuing from the previous CSS... */
+
+:global(.ant-form-item-explain-error) {
+    color: #ff4d4f;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+/* Accessibility improvements */
+:global(.ant-btn:focus),
+:global(.ant-input:focus),
+:global(.ant-select:focus) {
+    outline: 2px solid #1890ff;
+    outline-offset: 2px;
+}
+
+:global(.ant-checkbox:focus + .ant-checkbox-inner),
+:global(.ant-radio:focus + .ant-radio-inner) {
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* High contrast mode styles */
+@media (forced-colors: active) {
+
+    :global(.ant-btn),
+    :global(.ant-input),
+    :global(.ant-select-selector) {
+        border: 2px solid ButtonText;
+    }
+
+    :global(.ant-btn:hover),
+    :global(.ant-input:hover),
+    :global(.ant-select-selector:hover) {
+        border-color: Highlight;
+    }
+}
+
+/* Print styles */
+@media print {
+    .userManagement {
+        padding: 0;
+        background-color: #fff;
+    }
+
+    .header,
+    .actions,
+    :global(.ant-pagination),
+    :global(.ant-table-column-sorters) {
+        display: none !important;
+    }
+
+    :global(.ant-table) {
+        border: none !important;
+    }
+
+    :global(.ant-table-thead > tr > th),
+    :global(.ant-table-tbody > tr > td) {
+        border-bottom: 1px solid #000 !important;
+        padding: 8px !important;
+    }
+
+    :global(.ant-table-tbody > tr:last-child > td) {
+        border-bottom: none !important;
+    }
+}
+
+/* Loading skeleton styles */
+.skeleton {
+    background: linear-gradient(90deg, #f2f2f2 25%, #e6e6e6 50%, #f2f2f2 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Tooltip enhancements */
+:global(.ant-tooltip) {
+    max-width: 300px;
+}
+
+:global(.ant-tooltip-inner) {
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Empty state styles */
+.emptyState {
+    text-align: center;
+    padding: 40px;
+    background-color: #fafafa;
+    border-radius: 12px;
+    margin-top: 24px;
+}
+
+.emptyState h3 {
+    font-size: 20px;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+}
+
+.emptyState p {
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.45);
+    margin-bottom: 24px;
+}
+
+/* Error message styles */
+.errorMessage {
+    background-color: #fff2f0;
+    border: 1px solid #ffccc7;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.errorMessage :global(.anticon) {
+    color: #ff4d4f;
+    font-size: 18px;
+    margin-right: 12px;
+}
+
+/* Success message styles */
+.successMessage {
+    background-color: #f6ffed;
+    border: 1px solid #b7eb8f;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.successMessage :global(.anticon) {
+    color: #52c41a;
+    font-size: 18px;
+    margin-right: 12px;
+}
+
+/* Dropdown menu styles */
+:global(.ant-dropdown-menu) {
+    border-radius: 8px;
+    box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+}
+
+:global(.ant-dropdown-menu-item) {
+    padding: 8px 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    transition: all 0.3s;
+}
+
+:global(.ant-dropdown-menu-item:hover) {
+    background-color: #f0f7ff;
+}
+
+/* Improved focus styles for better keyboard navigation */
+:global(*:focus-visible) {
+    outline: 2px solid #1890ff;
+    outline-offset: 2px;
+}
+
+/* Custom scrollbar for the entire page */
+body::-webkit-scrollbar {
+    width: 12px;
+}
+
+body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 6px;
+    border: 3px solid #f1f1f1;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+/* Transition for all interactive elements */
+:global(a),
+:global(button),
+:global(input),
+:global(select),
+:global(.ant-tag),
+:global(.ant-list-item),
+:global(.ant-card) {
+    transition: all 0.3s ease;
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+    .userManagement {
+        background-color: #1f1f1f;
+    }
+
+    .header,
+    .userList,
+    .userDetails,
+    :global(.ant-list-item),
+    :global(.ant-card),
+    :global(.ant-modal-content),
+    :global(.ant-drawer-content) {
+        background-color: #2f2f2f;
+        color: #fff;
+    }
+
+    :global(.ant-table-thead > tr > th) {
+        background-color: #3f3f3f;
+        color: #fff;
+    }
+
+    :global(.ant-table-tbody > tr > td) {
+        border-bottom: 1px solid #4f4f4f;
+    }
+
+    :global(.ant-table-tbody > tr:hover > td) {
+        background-color: #3a3a3a;
+    }
+
+    :global(.ant-input),
+    :global(.ant-select-selector) {
+        background-color: #3f3f3f;
+        color: #fff;
+        border-color: #4f4f4f;
+    }
+
+    :global(.ant-btn) {
+        border-color: #4f4f4f;
+        color: #fff;
+    }
+
+    :global(.ant-btn-primary) {
+        background-color: #1890ff;
+        border-color: #1890ff;
+    }
+
+    :global(.ant-statistic-content) {
+        color: #40a9ff;
+    }
+
+    .courseTag {
+        background-color: #3f3f3f;
+        border-color: #4f4f4f;
+        color: #40a9ff;
+    }
+
+    :global(.ant-tag-green) {
+        background-color: #1a3921;
+        border-color: #274916;
+        color: #52c41a;
+    }
+
+    :global(.ant-tag-orange) {
+        background-color: #3b2e1a;
+        border-color: #5b3c17;
+        color: #fa8c16;
+    }
+
+    :global(.ant-tag-red) {
+        background-color: #3b1f1f;
+        border-color: #5b2121;
+        color: #ff4d4f;
+    }
+}
+
+/* Responsive font sizes */
+html {
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    html {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    html {
+        font-size: 12px;
+    }
+}
+
+/* Ensure all text is selectable for accessibility */
+* {
+    user-select: text;
+}
+
+/* Improve readability with proper line height and letter spacing */
+body {
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+}
+
+/* Ensure proper text contrast for accessibility */
+:global(.ant-typography) {
+    color: rgba(0, 0, 0, 0.85);
+}
+
+@media (prefers-color-scheme: dark) {
+    :global(.ant-typography) {
+        color: rgba(255, 255, 255, 0.85);
+    }
+}
+
+/* Add styles for focus-within to improve form field interactions */
+:global(.ant-form-item:focus-within) {
+    border-color: #40a9ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* Improve table row hover effect */
+:global(.ant-table-tbody > tr:hover) {
+    transition: background-color 0.3s ease;
+}
+
+/* Add smooth scrolling for anchor links */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Ensure proper spacing for inline form elements */
+:global(.ant-form-item-control-input-content)>*+* {
+    margin-left: 8px;
+}
+
+/* Improve loading spinner visibility */
+:global(.ant-spin-dot-item) {
+    background-color: #1890ff;
+}
+
+@media (prefers-color-scheme: dark) {
+    :global(.ant-spin-dot-item) {
+        background-color: #40a9ff;
+    }
+}

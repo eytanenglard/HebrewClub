@@ -1,0 +1,309 @@
+.courseManagement {
+    padding: 24px;
+    background-color: #f0f2f5;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.courseGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+}
+
+.courseCard {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.courseCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.courseCardBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.05;
+    background-image: linear-gradient(45deg, #1890ff 25%, transparent 25%, transparent 75%, #1890ff 75%, #1890ff),
+        linear-gradient(45deg, #1890ff 25%, transparent 25%, transparent 75%, #1890ff 75%, #1890ff);
+    background-size: 60px 60px;
+    background-position: 0 0, 30px 30px;
+}
+
+.courseCardInner {
+    position: relative;
+    z-index: 1;
+    padding: 24px;
+}
+
+.featuredRibbon {
+    position: absolute;
+    top: 20px;
+    right: -30px;
+    background-color: #ff4d4f;
+    color: white;
+    padding: 6px 30px;
+    font-size: 0.85em;
+    transform: rotate(45deg);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.courseStatus {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 4px 8px;
+    font-size: 0.85em;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 4px;
+}
+
+.statusactive {
+    background-color: #52c41a;
+    color: white;
+}
+
+.statusinactive {
+    background-color: #faad14;
+    color: white;
+}
+
+.statusfull {
+    background-color: #f5222d;
+    color: white;
+}
+
+.courseInfo h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.5em;
+    color: #1a1a1a;
+    font-weight: 600;
+}
+
+.courseDescription {
+    font-size: 0.95em;
+    color: #4a4a4a;
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.courseMetrics {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    background-color: #f6f8fa;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.courseMetrics span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.difficultyIndicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 12px;
+}
+
+.difficultyDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #d9d9d9;
+}
+
+.difficultyDotFilled {
+    background-color: #1890ff;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 12px;
+}
+
+.starFilled,
+.starEmpty {
+    color: #faad14;
+    font-size: 16px;
+}
+
+.courseTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.courseDates {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em;
+    color: #8c8c8c;
+    margin-top: 16px;
+}
+
+.prerequisites {
+    margin-top: 16px;
+}
+
+.prerequisiteItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.prerequisiteIcon {
+    margin-right: 8px;
+    color: #1890ff;
+}
+
+.courseActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* Progress bar styles */
+:global(.ant-progress-line) {
+    margin-bottom: 12px;
+}
+
+/* Tabs styles */
+:global(.ant-tabs-nav) {
+    margin-bottom: 24px;
+}
+
+:global(.ant-tabs-tab) {
+    font-size: 16px;
+}
+
+/* Modal styles */
+:global(.ant-modal-content) {
+    border-radius: 8px;
+}
+
+:global(.ant-modal-header) {
+    border-radius: 8px 8px 0 0;
+}
+
+:global(.ant-modal-footer) {
+    border-radius: 0 0 8px 8px;
+}
+
+/* Form styles */
+:global(.ant-form-item-label > label) {
+    font-weight: bold;
+}
+
+:global(.ant-input),
+:global(.ant-select-selector),
+:global(.ant-input-number),
+:global(.ant-picker) {
+    border-radius: 4px;
+}
+
+/* Button styles */
+:global(.ant-btn) {
+    border-radius: 4px;
+}
+
+/* Drag and Drop styles */
+.courseCard[data-rbd-dragging-state="dragging"] {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.courseGrid[data-rbd-droppable-state="dragging-over"] {
+    background-color: rgba(24, 144, 255, 0.05);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .courseManagement {
+        padding: 16px;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .courseGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .courseMetrics {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .courseActions {
+        flex-direction: column;
+    }
+
+    .courseActions button {
+        width: 100%;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.courseCard {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Custom scrollbar */
+.courseManagement {
+    scrollbar-width: thin;
+    scrollbar-color: #bfbfbf #f0f0f0;
+}
+
+.courseManagement::-webkit-scrollbar {
+    width: 6px;
+}
+
+.courseManagement::-webkit-scrollbar-track {
+    background: #f0f0f0;
+}
+
+.courseManagement::-webkit-scrollbar-thumb {
+    background-color: #bfbfbf;
+    border-radius: 3px;
+}
+
+.courseManagement::-webkit-scrollbar-thumb:hover {
+    background-color: #a0a0a0;
+}

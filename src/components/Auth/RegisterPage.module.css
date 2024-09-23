@@ -1,0 +1,303 @@
+:root {
+    --primary-color: #6e8efb;
+    --secondary-color: #a777e3;
+    --text-color: #333333;
+    --error-color: #ff4d4f;
+    --success-color: #52c41a;
+    --border-radius: 10px;
+    --box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    --transition-speed: 0.3s;
+}
+
+.registerContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 10vh;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.registerBox {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-speed) ease;
+}
+
+.registerBox:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.title {
+    font-size: 28px;
+    color: var(--text-color);
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.formGroup {
+    margin-bottom: 20px;
+    position: relative;
+    transition: all var(--transition-speed) ease;
+}
+
+.label {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+    transition: all var(--transition-speed) ease;
+}
+
+.inputIcon {
+    margin-right: 10px;
+    color: var(--primary-color);
+}
+
+.input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: all var(--transition-speed) ease;
+}
+
+.input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(110, 142, 251, 0.2);
+}
+
+.passwordInputWrapper {
+    position: relative;
+}
+
+.passwordToggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+}
+
+.passwordToggle:hover {
+    color: var(--primary-color);
+}
+
+.errorMessage {
+    color: var(--error-color);
+    font-size: 12px;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 77, 79, 0.1);
+    padding: 5px 10px;
+    border-radius: 4px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.errorMessage::before {
+    content: '⚠';
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.submitButton {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.submitButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(110, 142, 251, 0.4);
+}
+
+.submitButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.loginPrompt {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+}
+
+.link:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+.closeButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #999;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+}
+
+.closeButton:hover {
+    color: var(--text-color);
+    transform: rotate(90deg);
+}
+
+.successIcon {
+    font-size: 48px;
+    color: var(--success-color);
+    margin-bottom: 20px;
+}
+
+.socialButtons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.socialButton {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+}
+
+.googleButton {
+    background-color: #db4437;
+    color: white;
+    margin-right: 10px;
+}
+
+.facebookButton {
+    background-color: #4267B2;
+    color: white;
+}
+
+.socialButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    color: #666;
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background-color: #ddd;
+}
+
+.divider::before {
+    left: 0;
+}
+
+.divider::after {
+    right: 0;
+}
+
+.divider span {
+    background-color: white;
+    padding: 0 10px;
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 480px) {
+    .registerBox {
+        padding: 20px;
+    }
+
+    .title {
+        font-size: 24px;
+    }
+
+    .socialButtons {
+        flex-direction: column;
+    }
+
+    .socialButton {
+        margin-bottom: 10px;
+    }
+
+    .googleButton {
+        margin-right: 0;
+    }
+
+    .input {
+        font-size: 14px;
+    }
+
+    .submitButton {
+        font-size: 14px;
+    }
+}
