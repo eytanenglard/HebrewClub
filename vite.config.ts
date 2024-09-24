@@ -6,12 +6,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://hebrewclubbackend-c462b6460a67.herokuapp.com', // שונה: עודכן ל-URL של השרת ב-Heroku
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       },
       '/auth': {
-        target: 'http://localhost:5000',
+        target: 'https://hebrewclubbackend-c462b6460a67.herokuapp.com', // שונה: עודכן ל-URL של השרת ב-Heroku
         changeOrigin: true,
       }
     }
