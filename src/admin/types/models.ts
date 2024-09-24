@@ -267,7 +267,7 @@ export interface SectionData {
 
 export interface ContentItem {
   _id: string;
-  type: 'text' | 'video' | 'audio' | 'interactive' | 'quiz' | 'document' | 'link' | 'code-snippet';
+  type: 'text' | 'video' | 'audio' | 'interactive' | 'quiz' | 'document' | 'link' | 'code-snippet' | 'youtube';
   title: string;
   description: string;
   data: string;
@@ -366,6 +366,15 @@ export interface PopulatedCourse extends Omit<Course, 'instructors' | 'users' | 
   sections: Section[];
 }
 
+export interface PopulatedLessonfull extends Omit<Lesson, 'contentItems'> {
+  contentItems: ContentItem[];
+}
+export interface PopulatedSectionfull extends Omit<Section, 'lessons'> {
+  lessons: PopulatedLessonfull[];
+}
+export interface PopulatedCoursefull extends Omit<Course, 'sections'> {
+  sections: PopulatedSectionfull[];
+}
 
 // Assignment related types
 export interface Assignment {

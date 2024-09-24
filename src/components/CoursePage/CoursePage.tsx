@@ -7,10 +7,14 @@ import {
   FaQuestionCircle,
   FaChevronRight,
   FaChevronLeft,
-  FaSun,
-  FaMoon,
 } from "react-icons/fa";
-import { Course, Section, Lesson, User, ContentItem } from "../../admin/types/models";
+import {
+  User,
+  ContentItem,
+  PopulatedCoursefull,
+  PopulatedSectionfull,
+  PopulatedLessonfull,
+} from "../../admin/types/models";
 import { fetchCourseFromServer } from "../../services/personalAreaapiService";
 import VideoPlayer from "./VideoPlayer";
 import Header from "../Header/Header";
@@ -21,14 +25,18 @@ interface CoursePageProps {
 }
 
 const CoursePage: React.FC<CoursePageProps> = ({ courseId, user }) => {
-  const [course, setCourse] = useState<Course | null>(null);
-  const [currentSection, setCurrentSection] = useState<Section | null>(null);
-  const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
+  const [course, setCourse] = useState<PopulatedCoursefull>();
+  const [currentSection, setCurrentSection] =
+    useState<PopulatedSectionfull | null>(null);
+  const [currentLesson, setCurrentLesson] =
+    useState<PopulatedLessonfull | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredLessons, setFilteredLessons] = useState<Lesson[]>([]);
+  const [filteredLessons, setFilteredLessons] = useState<PopulatedLessonfull[]>(
+    []
+  );
 
   useEffect(() => {
     const loadCourse = async () => {
@@ -68,14 +76,6 @@ const CoursePage: React.FC<CoursePageProps> = ({ courseId, user }) => {
       setProgress(calculatedProgress);
     }
   }, [course, user?.completedLessons]);
-
-  const toggleDarkMode = useCallback(() => {
-    setDarkMode((prevMode) => !prevMode);
-  }, []);
-
-  useEffect(() => {
-    document.body.classList.toggle("dark-mode", darkMode);
-  }, [darkMode]);
 
   const handleLessonSelect = useCallback(
     (sectionId: string, lessonId: string) => {
@@ -144,7 +144,9 @@ const CoursePage: React.FC<CoursePageProps> = ({ courseId, user }) => {
     }
   }, [course, currentSection, currentLesson, handleLessonSelect]);
 
-  const getAllLessons = (course: Course): Lesson[] => {
+  const getAllLessons = (
+    course: PopulatedCoursefull
+  ): PopulatedLessonfull[] => {
     return course.sections.flatMap((section) => section.lessons);
   };
 
@@ -176,13 +178,6 @@ const CoursePage: React.FC<CoursePageProps> = ({ courseId, user }) => {
               onChange={(e) => handleSearch(e.target.value)}
             />
           </div>
-          <button
-            className={styles.darkModeToggle}
-            onClick={toggleDarkMode}
-            aria-label="Toggle dark mode"
-          >
-            {darkMode ? <FaSun /> : <FaMoon />}
-          </button>
         </div>
       </div>
     </div>
@@ -226,7 +221,7 @@ const CoursePage: React.FC<CoursePageProps> = ({ courseId, user }) => {
           </ul>
         </div>
       ) : (
-        course?.sections.map((section: Section) => (
+        course?.sections.map((section: PopulatedSectionfull) => (
           <div key={section._id} className={styles.section}>
             <h3 className={styles.sectionTitle}>{section.title}</h3>
             <ul className={styles.lessonList}>
@@ -340,7 +335,7 @@ const CoursePage: React.FC<CoursePageProps> = ({ courseId, user }) => {
   if (!course) return <div className={styles.notFound}>קורס לא נמצא</div>;
 
   return (
-    <div className={`${styles.coursePage} ${darkMode ? styles.darkMode : ""}`}>
+    <div className={`${styles.coursePage}`}>
       <Header onLoginClick={() => {}} onRegisterClick={() => {}} />
       <main className={styles.main}>
         <CourseHeader />

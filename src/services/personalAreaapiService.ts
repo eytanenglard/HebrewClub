@@ -1,7 +1,7 @@
 
 import axios, { AxiosInstance, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { ensureCsrfToken } from './auth';
-import { Course, UserProfile, UserResponse, ApiResponse } from '../admin/types/models';
+import { Course, UserProfile, UserResponse, ApiResponse, PopulatedCoursefull } from '../admin/types/models';
 
 const LOG_PREFIX = '[personalAreaapiService.ts]';
 
@@ -107,14 +107,14 @@ export const fetchCourses = async (userId: string): Promise<Course[]> => {
   }
 };
 
-export const fetchCourseFromServer = async (courseId: string): Promise<{ success: boolean; data?: Course; message: string }> => {
-  console.log(`${LOG_PREFIX} Fetching course with ID: ${courseId}`);
+export const fetchCourseFromServer = async (courseId: string): Promise<ApiResponse<PopulatedCoursefull>> => {
+  console.log(`${LOG_PREFIX} Attempting to fetch course content for courseId: ${courseId}`);
   try {
-    const response = await axiosInstance.get<{ success: boolean; data: Course; message: string }>(`/api/personal-area/courses/${courseId}`);
-    console.log(`${LOG_PREFIX} Course fetch successful:`, response.data);
+    const response = await axiosInstance.get<ApiResponse<PopulatedCoursefull>>(`/admin/course-content/courses/${courseId}/content`);
+    console.log(`${LOG_PREFIX} Received response for course content:`, response.data);
     return response.data;
   } catch (error) {
-    console.error(`${LOG_PREFIX} Failed to fetch course:`, error);
+    console.error(`${LOG_PREFIX} Fetch course content error:`, error);
     throw error;
   }
 };
