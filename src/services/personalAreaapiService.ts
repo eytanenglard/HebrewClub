@@ -1,6 +1,7 @@
+
 import axios, { AxiosInstance, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { ensureCsrfToken } from './auth';
-import { Course, Lesson, Bookmark, UserProfile, UserResponse, ApiResponse } from '../admin/types/models';
+import { Course, UserProfile, UserResponse, ApiResponse } from '../admin/types/models';
 
 const LOG_PREFIX = '[personalAreaapiService.ts]';
 

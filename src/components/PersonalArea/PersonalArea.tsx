@@ -18,11 +18,6 @@ import {
 import styles from "./PersonalArea.module.css";
 import { useAuth } from "../../context/AuthContext";
 import Dashboard from "./Dashboard/Dashboard";
-import Courses from "./Courses/Courses";
-import Assignments from "./Assignments/Assignments";
-import Grades from "./Grades/Grades";
-import Calendar from "./Calendar/Calendar";
-import Forum from "./Forum/Forum";
 import Settings from "./Settings/Settings";
 import Profile from "./Profile/Profile";
 
@@ -30,7 +25,7 @@ const PersonalArea: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const location = useLocation();
-  const { isLoggedIn, currentUser, isChecking, logout, checkAuthStatus } = useAuth();
+  const { isLoggedIn, isChecking, logout, checkAuthStatus } = useAuth();
 
   useEffect(() => {
     const initializePersonalArea = async () => {
@@ -102,7 +97,7 @@ const PersonalArea: React.FC = () => {
           </div>
           <div className={styles.userProfile}>
             <img
-              src={currentUser?.avatarUrl || "/path/to/default-avatar.jpg"}
+              src={"/path/to/default-avatar.jpg"}
               alt="User Avatar"
               className={styles.userAvatar}
             />
@@ -213,11 +208,6 @@ const PersonalArea: React.FC = () => {
           </div>
           <Routes>
             <Route path="dashboard" element={<Dashboard />} />
-            <Route path="courses" element={<Courses />} />
-            <Route path="assignments" element={<Assignments />} />
-            <Route path="grades" element={<Grades />} />
-            <Route path="calendar" element={<Calendar />} />
-            <Route path="forum" element={<Forum />} />
             <Route path="settings" element={<Settings />} />
             <Route path="profile" element={<Profile />} />
           </Routes>

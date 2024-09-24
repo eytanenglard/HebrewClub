@@ -1,6 +1,7 @@
+
 import api from './api';
 import { ApiResponse, User, LoginResponse, EmailVerificationRequest, EmailVerificationResponse } from '../admin/types/models';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 const LOG_PREFIX = '[auth.ts]';
 
 let csrfToken: string | null = null;

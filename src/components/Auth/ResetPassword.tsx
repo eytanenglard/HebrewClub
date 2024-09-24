@@ -1,5 +1,4 @@
 import React, {
-  useState,
   useEffect,
   useCallback,
   useReducer,
@@ -248,7 +247,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = React.memo(
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
               >
-                {({ isSubmitting, values, errors, touched, handleChange }) => (
+                {({ isSubmitting, errors, touched, handleChange }) => (
                   <Form className={styles.form}>
                     <div className={styles.formGroup}>
                       <label htmlFor="password" className={styles.label}>

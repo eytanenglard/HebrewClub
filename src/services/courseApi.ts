@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { ensureCsrfToken } from './auth';
-import { Course, Lesson, Bookmark } from '../types/models';
+import { Course} from '../types/models';
 
 const LOG_PREFIX = '[courseApi.ts]';
 

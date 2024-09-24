@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
-import { enrollInCourse, updateLead } from "../../services/api";
+import { enrollInCourse } from "../../services/api";
 import { Course, Lead } from "../../admin/types/models";
 import styles from "./EnrollModal.module.css";
 import { useNavigate } from "react-router-dom";
@@ -33,7 +33,7 @@ const EnrollModal: React.FC<EnrollModalProps> = ({
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [limitedOfferTimer, setLimitedOfferTimer] = useState(3600);
-  const [enrollmentSuccess, setEnrollmentSuccess] = useState(false);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const navigate = useNavigate();
 
@@ -116,16 +116,17 @@ const EnrollModal: React.FC<EnrollModalProps> = ({
           courseInterest: [course._id.toString()],
         });
         console.log("Enrollment response:", response);
-        if (response.success && response.data && response.data._id) {
-          console.log("Enrollment successful:", response.data);
-          setFormData((prevData) => ({
-            ...prevData,
-            _id: response.data._id,
-          }));
-          setEnrollmentSuccess(true);
-          handleEnrollment(response.data._id);
+        if (response.success && response.user && response.user._id) {
+          console.log("Enrollment successful:", response.user);
+          if (response.success) {
+            setFormData((prevData) => ({
+              ...prevData,
+              _id: (response.user as Lead)._id,
+            }));
+          }
+          handleEnrollment(response.user._id);
 
-          if (response.data.courseInterest.length > 1) {
+          if (response.user.courseInterest.length > 1) {
             console.log("New course interest added to existing lead");
           } else {
             console.log("New lead created with course interest");

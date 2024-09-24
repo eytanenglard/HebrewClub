@@ -1,11 +1,12 @@
 {
   "name": "clientnew",
   "private": true,
+  "homepage": ".",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run build:server && tsc -b && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "build:server": "tsc -p tsconfig.server.json",
@@ -20,6 +21,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@types/react-beautiful-dnd": "^13.1.8",
     "antd": "^5.20.2",
+    "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.13",

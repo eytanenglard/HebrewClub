@@ -585,8 +585,8 @@ export interface DiscussionReply {
 export interface ApiResponse<T> {
   success: boolean;
   message?: string;
-  token?: string;
-  user?: T;
+  token?: string | null;
+  user?: T | null;
   error?: string;
 }
 
