@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { message } from 'antd';
 import { fetchUsers, createUser, updateUser, deleteUser, addCourseToUser, removeCourseFromUser } from '../api/users';
-import { User, UserData, ApiResponse, PaginatedResponse } from '../types/models';
+import { User, UserData, PaginatedResponse } from '../types/models';
 
 export const useAdminUsers = () => {
   const [loading, setLoading] = useState<boolean>(false);
