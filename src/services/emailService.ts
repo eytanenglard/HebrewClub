@@ -283,8 +283,6 @@ export const sendWelcomeEmailWithCourseDetails = async (
   temporaryPassword: string,
   courseName: string,
   courseStartDate: string,
-  verificationToken: string,
-  verificationCode: string
 ): Promise<boolean> => {
   console.log(`${LOG_PREFIX} Sending welcome email with course details to:`, to);
   try {
@@ -297,8 +295,6 @@ export const sendWelcomeEmailWithCourseDetails = async (
       temporaryPassword, 
       courseName, 
       courseStartDate,
-      verificationToken,
-      verificationCode
     });
     const response = await api.post('/api/email/welcome-with-course', { 
       to, 
@@ -307,8 +303,6 @@ export const sendWelcomeEmailWithCourseDetails = async (
       temporaryPassword, 
       courseName, 
       courseStartDate,
-      verificationToken,
-      verificationCode
     });
     console.log(`${LOG_PREFIX} Welcome email with course details sent successfully`);
     return response.data.success;

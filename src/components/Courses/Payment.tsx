@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import { associateCourseWithUser as apiAssociateCourseWithUser } from "../../services/api";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import {
   fetchEnrollmentDetails,
   fetchCourseDetails,
@@ -17,7 +17,7 @@ import {
   UserData,
 } from "../../admin/types/models";
 import styles from "./Payment.module.css";
-import { login, register, getCurrentUser } from "../../services/auth";
+import {register, getCurrentUser } from "../../services/auth";
 import emailService from "../../services/emailService";
 
 // Interfaces for SUMIT API
@@ -211,7 +211,7 @@ const PaymentPage: React.FC = () => {
               await fetchCourseDetails(lead.courseInterest[0]);
             if (courseResponse.success && courseResponse.data) {
               setCourseDetails(courseResponse.data);
-              setPayingForCourseId(courseResponse.data._id);
+              setPayingForCourseId(courseResponse.data._id?.toString() || null);
             } else {
               throw new Error(t("paymentPage.errors.fetchCourseFailed"));
             }
