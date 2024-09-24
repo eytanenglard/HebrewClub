@@ -28,6 +28,7 @@ const resources = {
         deleteConfirmation: "Are you sure you want to delete your account? This action cannot be undone.",
         updateError: "Failed to update profile. Please try again.",
         deleteError: "Failed to delete account. Please try again.",
+        noUserEmail: "No user email found. Please try logging out and logging in again.",
       },
       languageSwitch: {
         he: "עברית",

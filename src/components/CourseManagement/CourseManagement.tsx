@@ -72,6 +72,7 @@ const CourseManagement: React.FC = () => {
               allowGuestPreview: false,
               courseFormat: "online",
               ageGroup: "Adult",
+              enrollmentCount: 0,
               minParticipants: 1,
               courseType: "recorded",
               category: course.category || "General",

@@ -2,34 +2,20 @@ import React, { useState, useEffect, lazy, Suspense } from "react";
 import {
   Routes,
   Route,
-  useNavigate,
   useLocation,
   Link,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  FaSearch,
   FaUser,
-  FaBell,
-  FaHome,
   FaBook,
-  FaTasks,
-  FaGraduationCap,
-  FaEnvelope,
-  FaMoneyBillWave,
   FaUserPlus,
-  FaChartBar,
   FaCog,
-  FaBars,
   FaChevronUp,
-  FaPlus,
   FaQuestion,
-  FaLanguage,
   FaFileExport,
-  FaCalendarAlt,
   FaStar,
-  FaEye,
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
@@ -42,45 +28,22 @@ const UserManagement = lazy(
 const CourseManagement = lazy(
   () => import("./components/CourseManagement/CourseManagement")
 );
-const TaskManagement = lazy(
-  () => import("./components/TaskManagement/TaskManagement")
-);
-const GradeManagement = lazy(
-  () => import("./components/GradeManagement/GradeManagement")
-);
-const MessageManagement = lazy(
-  () => import("./components/MessageManagement/MessageManagement")
-);
-const PaymentManagement = lazy(
-  () => import("./components/PaymentManagement/PaymentManagement")
-);
+
 const LeadManagement = lazy(
   () => import("./components/LeadManagement/LeadManagement")
 );
-const Statistics = lazy(() => import("./components/Statistics/Statistics"));
 const SystemSettings = lazy(
   () => import("./components/SystemSettings/SystemSettings")
 );
-
-interface Notification {
-  id: number;
-  message: string;
-  timestamp: Date;
-  read: boolean;
-}
 
 const AdminDashboard: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [showBackToTop, setShowBackToTop] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [showNotifications, setShowNotifications] = useState<boolean>(false);
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] =
     useState<boolean>(false);
   const [scrollProgress, setScrollProgress] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
@@ -96,25 +59,6 @@ const AdminDashboard: React.FC = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    // Simulating fetching notifications
-    setNotifications([
-      {
-        id: 1,
-        message: "New user registered",
-        timestamp: new Date(),
-        read: false,
-      },
-      { id: 2, message: "Course updated", timestamp: new Date(), read: false },
-      {
-        id: 3,
-        message: "New payment received",
-        timestamp: new Date(),
-        read: false,
-      },
-    ]);
   }, []);
 
   useEffect(() => {
@@ -136,25 +80,10 @@ const AdminDashboard: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Implement global search functionality
-    console.log("Searching for:", searchTerm);
-  };
-
-  const handleNotificationClick = () => {
-    setShowNotifications(!showNotifications);
-  };
-
   const navItems = [
     { path: "/admin/users", icon: FaUser, label: "Users" },
     { path: "/admin/courses", icon: FaBook, label: "Courses" },
-    { path: "/admin/tasks", icon: FaTasks, label: "Tasks" },
-    { path: "/admin/grades", icon: FaGraduationCap, label: "Grades" },
-    { path: "/admin/messages", icon: FaEnvelope, label: "Messages" },
-    { path: "/admin/payments", icon: FaMoneyBillWave, label: "Payments" },
     { path: "/admin/leads", icon: FaUserPlus, label: "Leads" },
-    { path: "/admin/statistics", icon: FaChartBar, label: "Statistics" },
     { path: "/admin/settings", icon: FaCog, label: "Settings" },
   ];
 
@@ -199,7 +128,7 @@ const AdminDashboard: React.FC = () => {
             {location.pathname
               .split("/")
               .slice(2)
-              .map((path, index) => (
+              .map((path) => (
                 <React.Fragment key={path}>
                   <span> / </span>
                   <Link to={`/admin/${path}`}>
@@ -220,12 +149,7 @@ const AdminDashboard: React.FC = () => {
               <Route index element={<div>Welcome to Admin Dashboard</div>} />
               <Route path="users" element={<UserManagement />} />
               <Route path="courses" element={<CourseManagement />} />
-              <Route path="tasks" element={<TaskManagement />} />
-              <Route path="grades" element={<GradeManagement />} />
-              <Route path="messages" element={<MessageManagement />} />
-              <Route path="payments" element={<PaymentManagement />} />
               <Route path="leads" element={<LeadManagement />} />
-              <Route path="statistics" element={<Statistics />} />
               <Route path="settings" element={<SystemSettings />} />
             </Routes>
             </AdminProvider>

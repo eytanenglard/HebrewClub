@@ -1,15 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { useInView } from "react-intersection-observer";
 import styles from "./Dashboard.module.css";
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
 
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -28,7 +23,6 @@ const Dashboard: React.FC = () => {
           },
         },
       }}
-      ref={ref}
     >
       <h1>{t("dashboard.welcome")}</h1>
       <div className={styles.cardContainer}>

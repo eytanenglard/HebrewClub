@@ -10,7 +10,7 @@ import {
   FaSun,
   FaMoon,
 } from "react-icons/fa";
-import { Course, Section, Lesson, User, ContentItem } from "../../types/models";
+import { Course, Section, Lesson, User, ContentItem } from "../../admin/types/models";
 import { fetchCourseFromServer } from "../../services/personalAreaapiService";
 import VideoPlayer from "./VideoPlayer";
 import Header from "../Header/Header";
@@ -27,9 +27,6 @@ const CoursePage: React.FC<CoursePageProps> = ({ courseId, user }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [darkMode, setDarkMode] = useState(
-    user?.preferences?.darkMode ?? false
-  );
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLessons, setFilteredLessons] = useState<Lesson[]>([]);
 
@@ -165,17 +162,6 @@ const CoursePage: React.FC<CoursePageProps> = ({ courseId, user }) => {
     [course]
   );
 
-  const renderActionButton = useCallback(
-    (lesson: Lesson) => {
-      const isCompleted = user?.completedLessons?.includes(lesson._id);
-      return (
-        <button className={styles.actionButton} onClick={navigateToNextLesson}>
-          סיימתי, לשיעור הבא
-        </button>
-      );
-    },
-    [user?.completedLessons, navigateToNextLesson]
-  );
   const CourseHeader: React.FC = () => (
     <div className={styles.courseHeader}>
       <div className={styles.courseHeaderContent}>
@@ -201,6 +187,7 @@ const CoursePage: React.FC<CoursePageProps> = ({ courseId, user }) => {
       </div>
     </div>
   );
+
   const Sidebar: React.FC = () => (
     <aside className={styles.sidebar}>
       <div className={styles.progressSection}>
@@ -287,7 +274,7 @@ const CoursePage: React.FC<CoursePageProps> = ({ courseId, user }) => {
             שיעור הבא <FaChevronLeft />
           </button>
         </div>
-        {currentLesson.contentItems.map((item, index) => {
+        {currentLesson.contentItems.map((item: ContentItem) => {
           switch (item.type) {
             case "video":
             case "youtube":
@@ -325,7 +312,6 @@ const CoursePage: React.FC<CoursePageProps> = ({ courseId, user }) => {
               return null;
           }
         })}
-        {renderActionButton(currentLesson)}
       </div>
     );
   };

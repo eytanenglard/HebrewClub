@@ -5,7 +5,6 @@ import { useApi } from "../../../services/personalAreaapiService";
 import {
   UserProfile,
   User,
-  ApiResponse,
   EditableUserProfile,
   UserResponse,
 } from "../../../admin/types/models";
@@ -18,9 +17,6 @@ import {
   FaSave,
   FaTrash,
   FaTimes,
-  FaGlobe,
-  FaMoon,
-  FaSun,
   FaPhone,
   FaBirthdayCake,
   FaHome,
@@ -130,8 +126,8 @@ const Profile: React.FC = () => {
     setEditedProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleServerResponse = (response: ApiResponse<UserResponse>): User => {
-    const userData = response;
+  const handleServerResponse = (response: UserResponse): User => {
+    const userData = response.user;
     const processedUser: User = {
       _id: userData._id,
       name: userData.name || "",
@@ -190,7 +186,7 @@ const Profile: React.FC = () => {
         country: editedProfile.country,
         bio: editedProfile.bio,
       };
-      const response: ApiResponse<UserResponse> = await api.updateUserProfile(
+      const response: UserResponse = await api.updateUserProfile(
         updatedProfile
       );
       const updatedUser = handleServerResponse(response);
@@ -330,6 +326,10 @@ const Profile: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
+      if (!currentUser || !currentUser.email) {
+        setError(t("profile.noUserEmail"));
+        return;
+      }
       const response = await forgotPassword(currentUser.email);
       if (response.success) {
         setSuccessMessage(t("profile.passwordResetEmailSent"));

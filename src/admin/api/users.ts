@@ -1,7 +1,7 @@
 // File: src/api/admin/users.ts
 import adminApi from './index';
 import { AxiosResponse } from 'axios';
-import { User, UserData, UserProfile, UserStats, UserActivity, PaginatedResponse, ApiResponse } from '../types/models';
+import { User, UserData, PaginatedResponse, ApiResponse } from '../types/models';
 import { LOG_PREFIX } from './index';
 
 export const fetchUsers = (page: number = 1, limit: number = 10, search?: string): Promise<AxiosResponse<PaginatedResponse<User[]>>> => {

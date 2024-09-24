@@ -55,8 +55,6 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({
   const [form] = Form.useForm();
   const [localCourse, setLocalCourse] = useState<PopulatedCourse>(course);
   const [sections, setSections] = useState<Section[]>([]);
-  const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [contentItems, setContentItems] = useState<ContentItem[]>([]);
 
   const {
     loading,
@@ -71,7 +69,6 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({
     updateContentItem,
     deleteContentItem,
     fetchLessons,
-    fetchContentItems,
   } = useAdminLearningCourses();
 
   const fetchData = async () => {
@@ -99,24 +96,11 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({
       const fetchedLessons = await fetchLessons(sectionIds);
       console.log("Lessons received:", fetchedLessons);
 
-      if (Array.isArray(fetchedLessons)) {
-        setLessons(fetchedLessons);
-
-        const contentItemIds = fetchedLessons.flatMap(
-          (l: Lesson) => l.contentItems
-        );
-      } else {
-        console.error("Received lessons are not a valid array");
-        setLessons([]);
-        setContentItems([]);
-      }
     } catch (error) {
       console.error("Error loading course data:", error);
       message.error("Failed to load course data. Please try again.");
       setLocalCourse(course);
       setSections([]);
-      setLessons([]);
-      setContentItems([]);
     }
   };
 
@@ -153,7 +137,6 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({
           break;
         case "lesson":
           await deleteLesson(item._id);
-          setLessons((prev) => prev.filter((l) => l._id !== item._id));
           setLocalCourse((prev) => ({
             ...prev,
             sections: prev.sections.map((s) => ({
@@ -164,15 +147,6 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({
           break;
         case "contentItem":
           await deleteContentItem(item._id);
-          setContentItems((prev) => prev.filter((ci) => ci._id !== item._id));
-          setLessons((prev) =>
-            prev.map((l) => ({
-              ...l,
-              contentItems: l.contentItems.filter(
-                (contentItemId) => contentItemId !== item._id
-              ),
-            }))
-          );
           break;
       }
       message.success("Item deleted successfully");
@@ -229,18 +203,12 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({
               editItem._id,
               values as LessonData
             );
-            setLessons((prev) =>
-              prev.map((l) =>
-                l._id === updatedItem?._id ? (updatedItem as Lesson) : l
-              )
-            );
           } else {
             updatedItem = await addLesson(
               editItem.parentId,
               values as LessonData
             );
             if (updatedItem) {
-              setLessons((prev) => [...prev, updatedItem as Lesson]);
               setLocalCourse((prev) => ({
                 ...prev,
                 sections: prev.sections.map((s) =>
@@ -261,31 +229,12 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({
               editItem._id,
               values as ContentItemData
             );
-            setContentItems((prev) =>
-              prev.map((ci) =>
-                ci._id === updatedItem?._id ? (updatedItem as ContentItem) : ci
-              )
-            );
           } else {
             updatedItem = await addContentItem(
               editItem.parentId,
               values as ContentItemData
             );
             if (updatedItem) {
-              setContentItems((prev) => [...prev, updatedItem as ContentItem]);
-              setLessons((prev) =>
-                prev.map((l) =>
-                  l._id === editItem.parentId
-                    ? {
-                        ...l,
-                        contentItems: [
-                          ...l.contentItems,
-                          (updatedItem as ContentItem)._id,
-                        ],
-                      }
-                    : l
-                )
-              );
             }
           }
           break;

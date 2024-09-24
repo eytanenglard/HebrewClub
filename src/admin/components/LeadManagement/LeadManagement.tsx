@@ -54,10 +54,6 @@ const LeadManagement: React.FC = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [form] = Form.useForm<Lead>();
-  const [filterStatus, setFilterStatus] = useState<string | null>(null);
-  const [dateRange, setDateRange] = useState<
-    [Dayjs | null, Dayjs | null] | null
-  >(null);
 
   const { useAdminLeads, useAdminCourses } = useAdminHooks();
   const { loading, fetchLeads, createLead, deleteLead, updateLead } =
@@ -175,7 +171,6 @@ const LeadManagement: React.FC = () => {
   };
 
   const handleFilterStatus = (status: string | null) => {
-    setFilterStatus(status);
     if (status) {
       setFilteredLeads(leads.filter((lead) => lead.status === status));
     } else {
@@ -185,9 +180,7 @@ const LeadManagement: React.FC = () => {
 
   const handleDateRangeChange = (
     dates: [Dayjs | null, Dayjs | null] | null,
-    dateStrings: [string, string]
   ) => {
-    setDateRange(dates);
     if (dates && dates[0] && dates[1]) {
       const [start, end] = dates;
       setFilteredLeads(

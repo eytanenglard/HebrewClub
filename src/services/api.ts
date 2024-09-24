@@ -286,6 +286,7 @@ export const verifyEmail = async (token: string): Promise<ApiResponse<User>> => 
     }
     return {
       success: response.data.success,
+      data: response.data.user ?? {} as User,
       message: response.data.message,
       token: response.data.token,
       user: response.data.user,
@@ -296,6 +297,7 @@ export const verifyEmail = async (token: string): Promise<ApiResponse<User>> => 
     if (axios.isAxiosError(error) && error.response) {
       return {
         success: false,
+        data: {} as User,
         message: '',
         token: null,
         user: null,

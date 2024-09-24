@@ -20,7 +20,7 @@ interface LoginPageProps {
 
 const LoginPage: React.FC<LoginPageProps> = ({ onClose, onRegister }) => {
   const { t } = useTranslation();
-  const { login, isLoggedIn, isChecking, loginError, currentUser } = useAuth();
+  const { login, isLoggedIn, isChecking, loginError} = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<LoginFormData>({
     usernameOrEmail: "",

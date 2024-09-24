@@ -1,5 +1,5 @@
-import adminApi from '../adminApi';
-import { User, PaginatedResponse, ApiResponse, UserStats, UserActivity, SystemSettings, DashboardStats, Course, Assignment, Grade, Message, Payment, Lead, Group, Permission, Role, CourseData } from '../types/models';
+import adminApi from '../api';
+import { User, PaginatedResponse, ApiResponse, UserStats, UserActivity, SystemSettings, Course, Assignment, Payment, Lead, Group, Permission, Role, CourseData } from '../types/models';
 
 const adminService = {
   // User Management
@@ -100,12 +100,6 @@ const adminService = {
     return response.data;
   },
 
-  // Dashboard Statistics
-  getDashboardStats: async (): Promise<ApiResponse<DashboardStats>> => {
-    const response = await adminApi.get<ApiResponse<DashboardStats>>('/admin/dashboard/stats');
-    return response.data;
-  },
-
   // Logs
   getSystemLogs: async (page: number = 1, limit: number = 50): Promise<PaginatedResponse<any[]>> => {
     const response = await adminApi.get<PaginatedResponse<any[]>>('/admin/logs', {
@@ -147,30 +141,6 @@ const adminService = {
 
   deleteAssignment: async (courseId: string, assignmentId: string): Promise<ApiResponse<void>> => {
     const response = await adminApi.delete<ApiResponse<void>>(`/admin/courses/${courseId}/assignments/${assignmentId}`);
-    return response.data;
-  },
-
-  // Grade Management
-  getGrades: async (courseId: string): Promise<ApiResponse<Grade[]>> => {
-    const response = await adminApi.get<ApiResponse<Grade[]>>(`/admin/courses/${courseId}/grades`);
-    return response.data;
-  },
-
-  updateGrade: async (courseId: string, gradeId: string, gradeData: Partial<Grade>): Promise<ApiResponse<Grade>> => {
-    const response = await adminApi.put<ApiResponse<Grade>>(`/admin/courses/${courseId}/grades/${gradeId}`, gradeData);
-    return response.data;
-  },
-
-  // Message Management
-  getMessages: async (page: number = 1, limit: number = 10): Promise<PaginatedResponse<Message>> => {
-    const response = await adminApi.get<PaginatedResponse<Message>>('/admin/messages', {
-      params: { page, limit }
-    });
-    return response.data;
-  },
-
-  sendMessage: async (messageData: Partial<Message>): Promise<ApiResponse<Message>> => {
-    const response = await adminApi.post<ApiResponse<Message>>('/admin/messages', messageData);
     return response.data;
   },
 

@@ -36,6 +36,7 @@ export const resetPassword = async (token: string, newPassword: string): Promise
     if (axios.isAxiosError(error) && error.response) {
       return {
         success: false,
+        data: null,
         error: error.response.data.error || 'An error occurred while initiating the password reset'
       };
     }
@@ -124,6 +125,7 @@ export const resendVerificationEmail = async (email: string): Promise<ApiRespons
     if (axios.isAxiosError(error) && error.response) {
       return {
         success: false,
+        data: null,
         error: error.response.data.error || 'An error occurred while resending the verification email'
       };
     }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { message } from 'antd';
 import { fetchLeads, createLead, updateLead, deleteLead } from '../api/leads';
-import { Lead, LeadData, ApiResponse, PaginatedResponse } from '../types/models';
+import { Lead, LeadData, PaginatedResponse } from '../types/models';
 
 export const useAdminLeads = () => {
   const [loading, setLoading] = useState<boolean>(false);

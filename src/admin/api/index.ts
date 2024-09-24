@@ -1,6 +1,5 @@
 // File: src/api/admin/index.ts
-import axios, { AxiosResponse } from 'axios';
-import { ApiResponse } from '../types/models';
+import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const LOG_PREFIX = '[adminApi]';

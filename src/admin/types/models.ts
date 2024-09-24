@@ -225,13 +225,12 @@ export interface CourseData {
   syllabus: string;
   learningObjectives: string[];
   estimatedCompletionTime: number;
-  
   certificationOffered: boolean;
   enrollmentDeadline?: Dayjs;
   refundPolicy?: string;
   discussionForumEnabled: boolean;
   allowGuestPreview: boolean;
-  courseFormat: 'online' | 'blended' | 'in-person';
+  courseFormat: 'online' | 'blended' | 'in-person' | 'live';
   nextStartDate?: Dayjs;
   prerequisiteCourses?: string[];
   ageGroup: string;
@@ -367,20 +366,6 @@ export interface PopulatedCourse extends Omit<Course, 'instructors' | 'users' | 
   sections: Section[];
 }
 
-export interface Bookmark {
-  _id: string;
-  userId: string;
-  lessonId: string;
-  time: number;
-  label: string;
-}
-
-export interface BookmarkData {
-  userId: string;
-  lessonId: string;
-  time: number;
-  label: string;
-}
 
 // Assignment related types
 export interface Assignment {
@@ -400,44 +385,6 @@ export interface AssignmentData {
   description: string;
   dueDate: Dayjs;
   maxScore: number;
-}
-
-// Grade related types
-export interface Grade {
-  _id: string;
-  userId: string;
-  courseId: string;
-  assignmentId: string;
-  score: number;
-  feedback: string;
-  submittedAt: Dayjs;
-  gradedAt: Dayjs;
-}
-
-export interface GradeData {
-  userId: string;
-  courseId: string;
-  assignmentId: string;
-  score: number;
-  feedback: string;
-}
-
-// Message related types
-export interface Message {
-  _id: string;
-  sender: string;
-  recipient: string;
-  subject: string;
-  content: string;
-  isRead: boolean;
-  createdAt: Dayjs;
-}
-
-export interface MessageData {
-  sender: string;
-  recipient: string;
-  subject: string;
-  content: string;
 }
 
 // Payment related types
@@ -556,32 +503,6 @@ export interface RoleData {
   permissions: string[];
 }
 
-// Discussion related types
-export interface Discussion {
-  _id: string;
-  courseId: string;
-  lessonId?: string;
-  title: string;
-  content: string;
-  author: string;
-  createdAt: Dayjs;
-  updatedAt: Dayjs;
-  replies: DiscussionReply[];
-  tags: string[];
-  isPinned: boolean;
-  isResolved: boolean;
-}
-
-export interface DiscussionReply {
-  _id: string;
-  discussionId: string;
-  content: string;
-  author: string;
-  createdAt: Dayjs;
-  updatedAt: Dayjs;
-  isInstructorReply: boolean;
-}
-
 // API Response types
 export interface ApiResponse<T> {
   success: boolean;
@@ -608,14 +529,6 @@ export interface LoginResponse {
   error?: string;
 }
 
-// Dashboard Statistics
-export interface DashboardStats {
-  totalUsers: number;
-  activeCourses: number;
-  totalRevenue: number;
-  newLeads: number;
-}
-
 export interface UserManagementData {
   users: User[];
   totalUsers: number;
@@ -630,88 +543,6 @@ export type CourseWithStringInstructors = Omit<Course, 'instructors' | 'users'> 
   instructors: string[];
   users: string[];
 };
-
-// Analytics related types
-export interface CourseAnalytics {
-  courseId: string;
-  enrollmentCount: number;
-  completionRate: number;
-  averageRating: number;
-  revenueGenerated: number;
-  mostPopularLessons: string[];
-}
-
-export interface UserAnalytics {
-  userId: string;
-  coursesEnrolled: number;
-  coursesCompleted: number;
-  averageGrade: number;
-  totalTimeSpent: number;
-  learningStreak: number;
-}
-
-// Notification related types
-export interface Notification {
-  _id: string;
-  userId: string;
-  type: 'course_update' | 'assignment_due' | 'grade_posted' | 'forum_reply' | 'system';
-  content: string;
-  isRead: boolean;
-  createdAt: Dayjs;
-}
-
-export interface NotificationData {
-  userId: string;
-  type: 'course_update' | 'assignment_due' | 'grade_posted' | 'forum_reply' | 'system';
-  content: string;
-}
-
-// Feedback related types
-export interface Feedback {
-  _id: string;
-  userId: string;
-  courseId: string;
-  rating: number;
-  comment: string;
-  createdAt: Dayjs;
-}
-
-export interface FeedbackData {
-  userId: string;
-  courseId: string;
-  rating: number;
-  comment: string;
-}
-
-// Progress tracking related types
-export interface ProgressTracker {
-  userId: string;
-  courseId: string;
-  lessonId: string;
-  completedContentItems: string[];
-  quizScores: { [quizId: string]: number };
-  lastAccessedAt: Dayjs;
-}
-
-// Resource related types
-export interface Resource {
-  _id: string;
-  title: string;
-  description: string;
-  type: 'pdf' | 'video' | 'link' | 'other';
-  url: string;
-  courseId: string;
-  createdAt: Dayjs;
-  updatedAt: Dayjs;
-}
-
-export interface ResourceData {
-  title: string;
-  description: string;
-  type: 'pdf' | 'video' | 'link' | 'other';
-  url: string;
-  courseId: string;
-}
 
 // Coupon related types
 export interface Coupon {
@@ -736,98 +567,3 @@ export interface CouponData {
   applicableCourses: string[];
 }
 
-// Calendar Event related types
-export interface CalendarEvent {
-  _id: string;
-  title: string;
-  description: string;
-  startDate: Dayjs;
-  endDate: Dayjs;
-  allDay: boolean;
-  userId: string;
-  courseId?: string;
-  lessonId?: string;
-  type: 'course_start' | 'assignment_due' | 'live_session' | 'personal';
-}
-
-export interface CalendarEventData {
-  title: string;
-  description: string;
-  startDate: Dayjs;
-  endDate: Dayjs;
-  allDay: boolean;
-  userId: string;
-  courseId?: string;
-  lessonId?: string;
-  type: 'course_start' | 'assignment_due' | 'live_session' | 'personal';
-}
-
-// Wishlist related types
-export interface Wishlist {
-  _id: string;
-  userId: string;
-  courses: string[];
-}
-
-export interface WishlistData {
-  userId: string;
-  courses: string[];
-}
-
-// Cart related types
-export interface Cart {
-  _id: string;
-  userId: string;
-  items: CartItem[];
-  createdAt: Dayjs;
-  updatedAt: Dayjs;
-}
-
-export interface CartItem {
-  courseId: string;
-  price: number;
-}
-
-export interface CartData {
-  userId: string;
-  items: CartItem[];
-}
-
-// Review related types
-export interface Review {
-  _id: string;
-  userId: string;
-  courseId: string;
-  rating: number;
-  comment: string;
-  createdAt: Dayjs;
-  updatedAt: Dayjs;
-}
-
-export interface ReviewData {
-  userId: string;
-  courseId: string;
-  rating: number;
-  comment: string;
-}
-
-// Subscription related types
-export interface Subscription {
-  _id: string;
-  userId: string;
-  plan: 'basic' | 'premium' | 'enterprise';
-  startDate: Dayjs;
-  endDate: Dayjs;
-  status: 'active' | 'cancelled' | 'expired';
-  paymentMethod: string;
-  autoRenew: boolean;
-}
-
-export interface SubscriptionData {
-  userId: string;
-  plan: 'basic' | 'premium' | 'enterprise';
-  startDate: Dayjs;
-  endDate: Dayjs;
-  paymentMethod: string;
-  autoRenew: boolean;
-}

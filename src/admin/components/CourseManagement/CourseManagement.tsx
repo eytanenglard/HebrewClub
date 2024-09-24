@@ -17,8 +17,6 @@ import {
   CourseData,
   User,
   Section,
-  Course,
-  ApiResponse,
 } from "../../types/models";
 import { useAdminLearningCourses } from "../../hooks/useAdminLearningCourses";
 import dayjs from "dayjs";
@@ -33,11 +31,10 @@ import {
   DeleteOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable} from "react-beautiful-dnd";
 import CourseContentManagement from "../CourseContentManagement/CourseContentManagement";
 import styles from "./CourseManagement.module.css";
 
-const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 

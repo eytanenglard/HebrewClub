@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 import Header from "../../components/Header/Header";
 import HeroSection from "../../components/HeroSection/HeroSection";
 import AboutUs from "../../components/AboutUs/AboutUs";
@@ -17,7 +16,6 @@ const HomePage: React.FC<HomePageProps> = ({
   onLoginClick,
   onRegisterClick,
 }) => {
-  const { t } = useTranslation();
 
   return (
     <div className={styles.homePage}>

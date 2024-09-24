@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { message } from 'antd';
 import { getDashboardStats } from '../api/dashboard';
-import { DashboardStats, ApiResponse } from '../types/models';
+import { DashboardStats} from '../types/models';
 
 export const useAdminDashboard = () => {
   const [loading, setLoading] = useState<boolean>(false);
