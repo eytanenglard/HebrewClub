@@ -23,7 +23,7 @@ import styles from "./UserManagement.module.css";
 const { Option } = Select;
 
 interface EnhancedUser extends User {
-  enhancedCourses: Array<{ _id: Types.ObjectId; title: string }>;
+  enhancedCourses: Array<{ _id: string; title: string }>;
 }
 
 const UserManagement: React.FC = () => {
@@ -92,7 +92,7 @@ const UserManagement: React.FC = () => {
     }
   };
 
-  const getCourseTitle = (courseId: Types.ObjectId | string): string => {
+  const getCourseTitle = (courseId: string): string => {
     if (Object.keys(coursesMap).length === 0) return "Loading...";
     return coursesMap[courseId.toString()]?.title || "Unknown Course";
   };
@@ -107,10 +107,7 @@ const UserManagement: React.FC = () => {
     }));
   }, [users, coursesMap]);
 
-  const updateUserCourses = (
-    userId: string,
-    updatedCourses: Types.ObjectId[]
-  ) => {
+  const updateUserCourses = (userId: string, updatedCourses: string[]) => {
     setUsers((prevUsers) =>
       prevUsers.map((user) =>
         user._id.toString() === userId
@@ -152,9 +149,7 @@ const UserManagement: React.FC = () => {
       const formattedValues = {
         ...values,
         courses: values.courses || [],
-        dateOfBirth: values.dateOfBirth
-          ? values.dateOfBirth.toDate()
-          : undefined,
+        dateOfBirth: values.dateOfBirth ? values.dateOfBirth : undefined,
       };
 
       if (editingUser) {
@@ -310,7 +305,7 @@ const UserManagement: React.FC = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (text: string, record: EnhancedUser) => (
+      render: (record: EnhancedUser) => (
         <span>
           <Button
             icon={<EditOutlined />}

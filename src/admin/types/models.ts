@@ -60,6 +60,7 @@ export interface UserData {
   phone?: string;
   username: string;
   password: string;
+  courses: string[]
   role: UserRole;
   dateOfBirth?: Date | string; 
   avatar?: string;
@@ -584,6 +585,7 @@ export interface DiscussionReply {
 // API Response types
 export interface ApiResponse<T> {
   success: boolean;
+  data: T;
   message?: string;
   token?: string | null;
   user?: T | null;
@@ -591,6 +593,7 @@ export interface ApiResponse<T> {
 }
 
 export interface PaginatedResponse<T> extends ApiResponse<T> {
+  data: T;
   totalCount: number;
   pageSize: number;
   currentPage: number;
