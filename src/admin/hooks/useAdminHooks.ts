@@ -3,9 +3,9 @@ import { useAdminUsers } from './useAdminUsers';
 import { useAdminLeads } from './useAdminLeads';
 import { useAdminDashboard } from './useAdminDashboard';
 import { useAdminLearningCourses } from './useAdminLearningCourses';
-import { CourseData, UserData, LeadData, DashboardStats } from '../types/models';
+import { CourseData, UserData, LeadData} from '../types/models';
 
-export type { CourseData, UserData, LeadData, DashboardStats };
+export type { CourseData, UserData, LeadData};
 
 export const useAdminHooks = () => {
   return {
