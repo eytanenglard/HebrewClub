@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { verifyEmail, resendVerificationEmail } from "../../services/auth";
 import { EmailVerificationRequest } from "../../admin/types/models";
 import styles from "./VerifyEmail.module.css";
-import { FaEnvelope, FaCheck, FaMoon, FaSun } from "react-icons/fa";
+import { FaCheck, FaMoon, FaSun } from "react-icons/fa";
 
 const VerifyEmail: React.FC = () => {
   const [token, setToken] = useState("");

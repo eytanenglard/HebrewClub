@@ -16,23 +16,20 @@ interface Payment {
 const Payments: React.FC = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const { token } = useAuth();
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     fetchPayments();
-  }, [token]);
+  }, [currentUser]);
 
   const fetchPayments = async () => {
     try {
-      if (!token) {
+      if (!currentUser) {
         setError("User is not authenticated");
         return;
       }
-      const response = await axios.get(`${API_BASE_URL}/payments`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      let _id = currentUser._id;
+      const response = await axios.get(`${API_BASE_URL}/payments/${_id}`);
       setPayments(response.data);
       setError(null);
     } catch (error) {

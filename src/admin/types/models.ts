@@ -18,7 +18,7 @@ export interface User {
   courses: string[];
   completedLessons: string[];
   progress: { [courseId: string]: number };
-  dateOfBirth?: Date;
+  dateOfBirth?: Date | string;
   address?: string;
   city?: string;
   country?: string;
@@ -60,9 +60,9 @@ export interface UserData {
   phone?: string;
   username: string;
   password: string;
-  courses: string[]
+  courses?: string[]
   role: UserRole;
-  dateOfBirth?: Date | string; 
+  dateOfBirth?: Date | string ; 
   avatar?: string;
   status: 'active' | 'inactive' | 'locked';
 }
