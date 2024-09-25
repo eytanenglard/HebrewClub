@@ -1,5 +1,3 @@
-import api from '../services/api';
-
 export const handleDevToolsRequest = () => {
   const originalFetch = window.fetch;
   window.fetch = function (input: RequestInfo | URL, init?: RequestInit) {
