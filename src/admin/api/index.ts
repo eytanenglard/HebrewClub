@@ -56,7 +56,5 @@ export * from './auth';
 export * from './users';
 export * from './courses';
 export * from './leads';
-export * from './stats';
-export * from './dashboard';
 
 export default adminApi;
