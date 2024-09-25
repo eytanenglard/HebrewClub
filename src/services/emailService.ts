@@ -121,19 +121,6 @@ api.interceptors.response.use(
 // הגדרת ברירת מחדל להוספת טוקן CSRF לכל בקשה
 api.defaults.headers.common['X-CSRF-Token'] = getCookieValue('XSRF-TOKEN');
 
-// פונקציה לקבלת טוקן CSRF חדש מהשרת
-async function refreshCsrfToken() {
-  try {
-    const response = await api.get('/auth/csrf-token');
-    api.defaults.headers.common['X-CSRF-Token'] = response.data.csrfToken;
-  } catch (error) {
-    console.error('Failed to refresh CSRF token:', error);
-  }
-}
-
-// קריאה לפונקציה זו לפני ביצוע פעולות שדורשות אימות CSRF
-await refreshCsrfToken();
-
 export const sendWelcomeEmail = async (to: string, name: string, temporaryPassword: string): Promise<boolean> => {
   console.log(`${LOG_PREFIX} Sending welcome email to:`, to);
   try {
@@ -148,8 +135,10 @@ export const sendWelcomeEmail = async (to: string, name: string, temporaryPasswo
     throw error;
   }
 };
+
 export const sendCourseWelcomeEmail = async (to: string, userName: string, courseName: string): Promise<boolean> => {
   try {
+    await ensureCsrfToken();
     const response = await api.post('/email/course-welcome', { to, userName, courseName });
     return response.data.success;
   } catch (error) {
@@ -157,6 +146,7 @@ export const sendCourseWelcomeEmail = async (to: string, userName: string, cours
     throw error;
   }
 };
+
 export const sendPasswordResetEmail = async (to: string, resetToken: string): Promise<boolean> => {
   console.log(`${LOG_PREFIX} Sending password reset email to:`, to);
   try {
@@ -276,6 +266,7 @@ export const sendContactFormSubmission = async (name: string, email: string, mes
     throw error;
   }
 };
+
 export const sendWelcomeEmailWithCourseDetails = async (
   to: string,
   name: string,
