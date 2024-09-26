@@ -1,7 +1,6 @@
 import { useAdminCourses } from './useAdminCourses';
 import { useAdminUsers } from './useAdminUsers';
 import { useAdminLeads } from './useAdminLeads';
-import { useAdminDashboard } from './useAdminDashboard';
 import { useAdminLearningCourses } from './useAdminLearningCourses';
 import { CourseData, UserData, LeadData} from '../types/models';
 
@@ -12,7 +11,6 @@ export const useAdminHooks = () => {
     useAdminCourses,
     useAdminUsers,
     useAdminLeads,
-    useAdminDashboard,
     useAdminLearningCourses
   };
 };

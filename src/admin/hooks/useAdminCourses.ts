@@ -1,16 +1,20 @@
 import { useState } from 'react';
 import { message } from 'antd';
 import { getCourseManagementData, createCourse, updateCourse, deleteCourse, addUserToCourse, removeUserFromCourse } from '../api/courses';
-import { Course, CourseData, ApiResponse } from '../types/models';
+import { Course, CourseData} from '../types/models';
 
 export const useAdminCourses = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleFetchCourses = async (): Promise<ApiResponse<Course[]>> => {
+  const handleFetchCourses = async (): Promise<Course[]> => {
     setLoading(true);
     try {
       const response = await getCourseManagementData();
-      return response.data;
+      if (response.success && response.data) {
+        return response.data.data;
+      } else {
+        throw new Error(response.message || 'Failed to fetch courses');
+      }
     } catch (error) {
       console.error('Fetch courses error:', error);
       message.error('Failed to fetch courses');
@@ -24,8 +28,12 @@ export const useAdminCourses = () => {
     setLoading(true);
     try {
       const response = await createCourse(courseData);
-      message.success('Course created successfully');
-      return response.data.data!;
+      if (response.success && response.data) {
+        message.success('Course created successfully');
+        return response.data;
+      } else {
+        throw new Error(response.message || 'Failed to create course');
+      }
     } catch (error) {
       console.error('Create course error:', error);
       message.error('Failed to create course');
@@ -39,8 +47,12 @@ export const useAdminCourses = () => {
     setLoading(true);
     try {
       const response = await updateCourse(id, courseData);
-      message.success('Course updated successfully');
-      return response.data.data!;
+      if (response.success && response.data) {
+        message.success('Course updated successfully');
+        return response.data;
+      } else {
+        throw new Error(response.message || 'Failed to update course');
+      }
     } catch (error) {
       console.error('Update course error:', error);
       message.error('Failed to update course');
@@ -53,8 +65,12 @@ export const useAdminCourses = () => {
   const handleDeleteCourse = async (id: string): Promise<void> => {
     setLoading(true);
     try {
-      await deleteCourse(id);
-      message.success('Course deleted successfully');
+      const response = await deleteCourse(id);
+      if (response.success) {
+        message.success('Course deleted successfully');
+      } else {
+        throw new Error(response.message || 'Failed to delete course');
+      }
     } catch (error) {
       console.error('Delete course error:', error);
       message.error('Failed to delete course');
@@ -68,8 +84,12 @@ export const useAdminCourses = () => {
     setLoading(true);
     try {
       const response = await addUserToCourse(courseId, userId);
-      message.success('User added to course successfully');
-      return response.data.data!;
+      if (response.success && response.data) {
+        message.success('User added to course successfully');
+        return response.data;
+      } else {
+        throw new Error(response.message || 'Failed to add user to course');
+      }
     } catch (error) {
       console.error('Add user to course error:', error);
       message.error('Failed to add user to course');
@@ -83,8 +103,12 @@ export const useAdminCourses = () => {
     setLoading(true);
     try {
       const response = await removeUserFromCourse(courseId, userId);
-      message.success('User removed from course successfully');
-      return response.data.data!;
+      if (response.success && response.data) {
+        message.success('User removed from course successfully');
+        return response.data;
+      } else {
+        throw new Error(response.message || 'Failed to remove user from course');
+      }
     } catch (error) {
       console.error('Remove user from course error:', error);
       message.error('Failed to remove user from course');

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { message } from 'antd';
 import { fetchUsers, createUser, updateUser, deleteUser, addCourseToUser, removeCourseFromUser } from '../api/users';
-import { User, UserData, PaginatedResponse } from '../types/models';
+import { User, UserData, PaginatedResponse} from '../types/models';
 
 export const useAdminUsers = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -26,7 +26,7 @@ export const useAdminUsers = () => {
       console.log("userData--", {userData});
       const response = await createUser(userData);
       message.success('User created successfully');
-      return response.data.data!;
+      return response.data;
     } catch (error) {
       console.error('Create user error:', error);
       message.error('Failed to create user');
@@ -41,7 +41,7 @@ export const useAdminUsers = () => {
     try {
       const response = await updateUser(id, userData);
       message.success('User updated successfully');
-      return response.data.data!;
+      return response.data;
     } catch (error) {
       console.error('Update user error:', error);
       message.error('Failed to update user');
@@ -70,7 +70,7 @@ export const useAdminUsers = () => {
     try {
       const response = await addCourseToUser(userId, courseId);
       message.success('Course added to user successfully');
-      return response.data.data!;
+      return response.data;
     } catch (error) {
       console.error('Add course to user error:', error);
       message.error(error instanceof Error ? error.message : 'Failed to add course to user');
@@ -85,7 +85,7 @@ export const useAdminUsers = () => {
     try {
       const response = await removeCourseFromUser(userId, courseId);
       message.success('Course removed from user successfully');
-      return response.data.data!;
+      return response.data;
     } catch (error) {
       console.error('Remove course from user error:', error);
       message.error('Failed to remove course from user');

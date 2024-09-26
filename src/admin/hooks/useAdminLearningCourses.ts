@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios';
 import { useState } from 'react';
 import { message } from 'antd';
 import {
@@ -24,7 +23,6 @@ import {
   fetchContentItems,
   fetchInstructors as fetchInstructorsAPI,
   fetchUsersCourse as fetchUsersCourseAPI,
-
 } from '../api/courses';
 import { 
   Course, 
@@ -44,13 +42,12 @@ import {
 export const useAdminLearningCourses = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-
   const handleFetchCourses = async (): Promise<PopulatedCourse[]> => {
     setLoading(true);
     try {
-      const response: AxiosResponse<PaginatedResponse<Course[]>> = await fetchCoursesAPI();
+      const response: ApiResponse<PaginatedResponse<Course[]>> = await fetchCoursesAPI();
       
-      if (response.data.success && response.data.data) {
+      if (response.success && response.data) {
         // Fetch instructors and users
         const instructorsResponse = await handleFetchInstructors();
         const usersResponse = await handleFetchUsersCourse();
@@ -72,7 +69,7 @@ export const useAdminLearningCourses = () => {
   
         return populatedCourses;
       } else {
-        throw new Error(response.data.error || 'Failed to fetch courses');
+        throw new Error(response.error || 'Failed to fetch courses');
       }
     } catch (error) {
       console.error('Fetch courses error:', error);
@@ -87,7 +84,11 @@ export const useAdminLearningCourses = () => {
     setLoading(true);
     try {
       const response = await fetchInstructorsAPI();
-      return response.data.data!;
+      if (response.success && response.data) {
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to fetch instructors');
+      }
     } catch (error) {
       console.error('Fetch instructors error:', error);
       message.error('Failed to fetch instructors');
@@ -96,6 +97,7 @@ export const useAdminLearningCourses = () => {
       setLoading(false);
     }
   };
+
   const handleFetchAllSections = async (): Promise<Section[]> => {
     setLoading(true);
     try {
@@ -120,11 +122,12 @@ export const useAdminLearningCourses = () => {
   const handleFetchUsersCourse = async (): Promise<User[]> => {
     setLoading(true);
     try {
-      const response: AxiosResponse<ApiResponse<User[]>> = await fetchUsersCourseAPI();
-      if (!response.data.success || !response.data.data) {
-        throw new Error(response.data.error || 'Failed to fetch users');
+      const response: ApiResponse<User[]> = await fetchUsersCourseAPI();
+      if (response.success && response.data) {
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to fetch users');
       }
-      return response.data.data;
     } catch (error) {
       console.error('Fetch users error:', error);
       message.error('Failed to fetch users');
@@ -138,8 +141,12 @@ export const useAdminLearningCourses = () => {
     setLoading(true);
     try {
       const response = await createCourse(courseData);
-      message.success('Course created successfully');
-      return response.data.data!;
+      if (response.success && response.data) {
+        message.success('Course created successfully');
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to create course');
+      }
     } catch (error) {
       console.error('Create course error:', error);
       message.error('Failed to create course');
@@ -153,8 +160,12 @@ export const useAdminLearningCourses = () => {
     setLoading(true);
     try {
       const response = await updateCourse(courseId, courseData);
-      message.success('Course updated successfully');
-      return response.data.data!;
+      if (response.success && response.data) {
+        message.success('Course updated successfully');
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to update course');
+      }
     } catch (error) {
       console.error('Update course error:', error);
       message.error('Failed to update course');
@@ -167,8 +178,12 @@ export const useAdminLearningCourses = () => {
   const handleDeleteCourse = async (courseId: string): Promise<void> => {
     setLoading(true);
     try {
-      await deleteCourse(courseId);
-      message.success('Course deleted successfully');
+      const response = await deleteCourse(courseId);
+      if (response.success) {
+        message.success('Course deleted successfully');
+      } else {
+        throw new Error(response.error || 'Failed to delete course');
+      }
     } catch (error) {
       console.error('Delete course error:', error);
       message.error('Failed to delete course');
@@ -182,8 +197,12 @@ export const useAdminLearningCourses = () => {
     setLoading(true);
     try {
       const response = await addUserToCourse(courseId, userId);
-      message.success('User added to course successfully');
-      return response.data.data!;
+      if (response.success && response.data) {
+        message.success('User added to course successfully');
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to add user to course');
+      }
     } catch (error) {
       console.error('Add user to course error:', error);
       message.error('Failed to add user to course');
@@ -197,8 +216,12 @@ export const useAdminLearningCourses = () => {
     setLoading(true);
     try {
       const response = await removeUserFromCourse(courseId, userId);
-      message.success('User removed from course successfully');
-      return response.data.data!;
+      if (response.success && response.data) {
+        message.success('User removed from course successfully');
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to remove user from course');
+      }
     } catch (error) {
       console.error('Remove user from course error:', error);
       message.error('Failed to remove user from course');
@@ -232,12 +255,17 @@ export const useAdminLearningCourses = () => {
       setLoading(false);
     }
   };
+
   const handleAddSection = async (courseId: string, sectionData: SectionData): Promise<Section> => {
     setLoading(true);
     try {
       const response = await addSection(courseId, sectionData);
-      message.success('Section added successfully');
-      return response.data.data!;
+      if (response.success && response.data) {
+        message.success('Section added successfully');
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to add section');
+      }
     } catch (error) {
       console.error('Add section error:', error);
       message.error('Failed to add section');
@@ -251,8 +279,12 @@ export const useAdminLearningCourses = () => {
     setLoading(true);
     try {
       const response = await updateSection(sectionId, sectionData);
-      message.success('Section updated successfully');
-      return response.data.data!;
+      if (response.success && response.data) {
+        message.success('Section updated successfully');
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to update section');
+      }
     } catch (error) {
       console.error('Update section error:', error);
       message.error('Failed to update section');
@@ -265,8 +297,12 @@ export const useAdminLearningCourses = () => {
   const handleDeleteSection = async (sectionId: string): Promise<void> => {
     setLoading(true);
     try {
-      await deleteSection(sectionId);
-      message.success('Section deleted successfully');
+      const response = await deleteSection(sectionId);
+      if (response.success) {
+        message.success('Section deleted successfully');
+      } else {
+        throw new Error(response.error || 'Failed to delete section');
+      }
     } catch (error) {
       console.error('Delete section error:', error);
       message.error('Failed to delete section');
@@ -280,8 +316,12 @@ export const useAdminLearningCourses = () => {
     setLoading(true);
     try {
       const response = await addLesson(sectionId, lessonData);
-      message.success('Lesson added successfully');
-      return response.data.data!;
+      if (response.success && response.data) {
+        message.success('Lesson added successfully');
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to add lesson');
+      }
     } catch (error) {
       console.error('Add lesson error:', error);
       message.error('Failed to add lesson');
@@ -295,8 +335,12 @@ export const useAdminLearningCourses = () => {
     setLoading(true);
     try {
       const response = await updateLesson(lessonId, lessonData);
-      message.success('Lesson updated successfully');
-      return response.data.data!;
+      if (response.success && response.data) {
+        message.success('Lesson updated successfully');
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to update lesson');
+      }
     } catch (error) {
       console.error('Update lesson error:', error);
       message.error('Failed to update lesson');
@@ -309,8 +353,12 @@ export const useAdminLearningCourses = () => {
   const handleDeleteLesson = async (lessonId: string): Promise<void> => {
     setLoading(true);
     try {
-      await deleteLesson(lessonId);
-      message.success('Lesson deleted successfully');
+      const response = await deleteLesson(lessonId);
+      if (response.success) {
+        message.success('Lesson deleted successfully');
+      } else {
+        throw new Error(response.error || 'Failed to delete lesson');
+      }
     } catch (error) {
       console.error('Delete lesson error:', error);
       message.error('Failed to delete lesson');
@@ -324,8 +372,12 @@ export const useAdminLearningCourses = () => {
     setLoading(true);
     try {
       const response = await addContentItem(lessonId, contentItemData);
-      message.success('Content item added successfully');
-      return response.data.data!;
+      if (response.success && response.data) {
+        message.success('Content item added successfully');
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to add content item');
+      }
     } catch (error) {
       console.error('Add content item error:', error);
       message.error('Failed to add content item');
@@ -339,8 +391,12 @@ export const useAdminLearningCourses = () => {
     setLoading(true);
     try {
       const response = await updateContentItem(contentItemId, contentItemData);
-      message.success('Content item updated successfully');
-      return response.data.data!;
+      if (response.success && response.data) {
+        message.success('Content item updated successfully');
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to update content item');
+      }
     } catch (error) {
       console.error('Update content item error:', error);
       message.error('Failed to update content item');
@@ -353,8 +409,12 @@ export const useAdminLearningCourses = () => {
   const handleDeleteContentItem = async (contentItemId: string): Promise<void> => {
     setLoading(true);
     try {
-      await deleteContentItem(contentItemId);
-      message.success('Content item deleted successfully');
+      const response = await deleteContentItem(contentItemId);
+      if (response.success) {
+        message.success('Content item deleted successfully');
+      } else {
+        throw new Error(response.error || 'Failed to delete content item');
+      }
     } catch (error) {
       console.error('Delete content item error:', error);
       message.error('Failed to delete content item');
@@ -377,16 +437,20 @@ export const useAdminLearningCourses = () => {
   
       const response = await updateCourseStructure(courseId, courseToUpdate);
       
-      // Transform the returned Course back to PopulatedCourse
-      const updatedPopulatedCourse: PopulatedCourse = {
-        ...response.data.data!,
-        instructors: updatedCourse.instructors,
-        users: updatedCourse.users,
-        sections: updatedCourse.sections
-      };
-  
-      message.success('Course structure updated successfully');
-      return updatedPopulatedCourse;
+      if (response.success && response.data) {
+        // Transform the returned Course back to PopulatedCourse
+        const updatedPopulatedCourse: PopulatedCourse = {
+          ...response.data,
+          instructors: updatedCourse.instructors,
+          users: updatedCourse.users,
+          sections: updatedCourse.sections
+        };
+    
+        message.success('Course structure updated successfully');
+        return updatedPopulatedCourse;
+      } else {
+        throw new Error(response.error || 'Failed to update course structure');
+      }
     } catch (error) {
       console.error('Update course structure error:', error);
       message.error('Failed to update course structure');
@@ -396,12 +460,15 @@ export const useAdminLearningCourses = () => {
     }
   };
 
-  // New functions
   const handleFetchSections = async (courseId: string): Promise<Section[]> => {
     setLoading(true);
     try {
       const response = await fetchSections(courseId);
-      return response.data.data!;
+      if (response.success && response.data) {
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to fetch sections');
+      }
     } catch (error) {
       console.error('Fetch sections error:', error);
       message.error('Failed to fetch sections');
@@ -416,11 +483,12 @@ export const useAdminLearningCourses = () => {
     try {
       console.log('[handleFetchContentItems] Fetching content items for IDs:', contentItemIds);
       const response: ApiResponse<ContentItem[]> = await fetchContentItems(contentItemIds);
-      if (!response.success || !response.data) {
+      if (response.success && response.data) {
+        console.log('[handleFetchContentItems] Fetched content items:', response.data);
+        return response.data;
+      } else {
         throw new Error(response.error || 'Failed to fetch content items');
       }
-      console.log('[handleFetchContentItems] Fetched content items:', response.data);
-      return response.data;
     } catch (error) {
       console.error('Fetch content items error:', error);
       message.error('Failed to fetch content items');
@@ -429,6 +497,7 @@ export const useAdminLearningCourses = () => {
       setLoading(false);
     }
   };
+
   const handleFetchLessons = async (sectionIds: string[]): Promise<Lesson[]> => {
     setLoading(true);
     console.log(`[handleFetchLessons] Starting to fetch lessons for sections:`, sectionIds);
@@ -442,18 +511,17 @@ export const useAdminLearningCourses = () => {
       const response: ApiResponse<Lesson[]> = await fetchLessons(sectionIds);
       console.log(`[handleFetchLessons] API response:`, response);
   
-      if (!response.success || !response.data) {
-        console.error(`[handleFetchLessons] API call failed:`, response.error);
+      if (response.success && response.data) {
+        if (!Array.isArray(response.data)) {
+          console.error(`[handleFetchLessons] Invalid data format. Expected array, got:`, typeof response.data);
+          throw new Error('Invalid data format received from server');
+        }
+  
+        console.log(`[handleFetchLessons] Successfully fetched ${response.data.length} lessons`);
+        return response.data;
+      } else {
         throw new Error(response.error || 'Failed to fetch lessons');
       }
-  
-      if (!Array.isArray(response.data)) {
-        console.error(`[handleFetchLessons] Invalid data format. Expected array, got:`, typeof response.data);
-        throw new Error('Invalid data format received from server');
-      }
-  
-      console.log(`[handleFetchLessons] Successfully fetched ${response.data.length} lessons`);
-      return response.data;
     } catch (error) {
       console.error('[handleFetchLessons] Error:', error);
       message.error('Failed to fetch lessons');
@@ -462,6 +530,7 @@ export const useAdminLearningCourses = () => {
       setLoading(false);
     }
   };
+
   return {
     loading,
     fetchCourses: handleFetchCourses,
