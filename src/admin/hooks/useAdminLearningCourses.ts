@@ -53,7 +53,7 @@ export const useAdminLearningCourses = () => {
         const usersResponse = await handleFetchUsersCourse();
         console.log('response', response);
         console.log('response.data', response.data);
-        console.log('response', response.data.data);
+        console.log('response.data.data', response.data.data);
         // Fetch sections for all courses
         console.log('allSections');
         const allSections = await Promise.all(response.data.data.map(course => handleFetchSections(course.courseId)));
