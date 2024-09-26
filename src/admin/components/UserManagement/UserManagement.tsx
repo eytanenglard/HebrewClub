@@ -75,10 +75,10 @@ const UserManagement: React.FC = () => {
 
   const fetchCoursesData = async () => {
     try {
-      const response = await fetchCourses();
-      if (response.success && Array.isArray(response.data)) {
-        setCourses(response.data);
-        const courseMap = response.data.reduce((acc, course) => {
+      const coursesData = await fetchCourses();
+      if (Array.isArray(coursesData)) {
+        setCourses(coursesData);
+        const courseMap = coursesData.reduce((acc, course) => {
           acc[course._id.toString()] = course;
           return acc;
         }, {} as { [key: string]: Course });

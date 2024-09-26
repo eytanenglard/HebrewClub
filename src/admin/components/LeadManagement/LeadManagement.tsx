@@ -83,8 +83,8 @@ const LeadManagement: React.FC = () => {
   const fetchCoursesData = async () => {
     try {
       const response = await fetchCourses();
-      if (response.success && Array.isArray(response.data)) {
-        setCourses(response.data);
+      if (response && Array.isArray(response)) {
+        setCourses(response);
       } else {
         throw new Error("Invalid response format");
       }
@@ -179,7 +179,7 @@ const LeadManagement: React.FC = () => {
   };
 
   const handleDateRangeChange = (
-    dates: [Dayjs | null, Dayjs | null] | null,
+    dates: [Dayjs | null, Dayjs | null] | null
   ) => {
     if (dates && dates[0] && dates[1]) {
       const [start, end] = dates;

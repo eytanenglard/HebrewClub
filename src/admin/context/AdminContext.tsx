@@ -17,7 +17,6 @@ interface AdminContextType {
   courses: ReturnType<AdminHooks["useAdminCourses"]>;
   users: ReturnType<AdminHooks["useAdminUsers"]>;
   leads: ReturnType<AdminHooks["useAdminLeads"]>;
-  dashboard: ReturnType<AdminHooks["useAdminDashboard"]>;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -31,7 +30,7 @@ const isUserAdmin = (user: User | null): boolean => {
 export const AdminProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const { useAdminCourses, useAdminUsers, useAdminLeads, useAdminDashboard } =
+  const { useAdminCourses, useAdminUsers, useAdminLeads} =
     useAdminHooks();
 
   const { isLoggedIn, currentUser, isChecking } = useAuth();
@@ -41,7 +40,6 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({
   const courses = useAdminCourses();
   const users = useAdminUsers();
   const leads = useAdminLeads();
-  const dashboard = useAdminDashboard();
 
   useEffect(() => {
     if (isLoggedIn && !isChecking) {
@@ -57,7 +55,6 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({
     courses,
     users,
     leads,
-    dashboard,
   };
 
   return (

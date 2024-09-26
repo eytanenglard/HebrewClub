@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { message } from 'antd';
 import { getCourseManagementData, createCourse, updateCourse, deleteCourse, addUserToCourse, removeUserFromCourse } from '../api/courses';
-import { Course, CourseData} from '../types/models';
+import { Course, CourseData, ApiResponse, PaginatedResponse } from '../types/models';
 
 export const useAdminCourses = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -9,8 +9,8 @@ export const useAdminCourses = () => {
   const handleFetchCourses = async (): Promise<Course[]> => {
     setLoading(true);
     try {
-      const response = await getCourseManagementData();
-      if (response.success && response.data) {
+      const response: ApiResponse<PaginatedResponse<Course[]>> = await getCourseManagementData();
+      if (response.success && response.data && response.data.data) {
         return response.data.data;
       } else {
         throw new Error(response.message || 'Failed to fetch courses');
