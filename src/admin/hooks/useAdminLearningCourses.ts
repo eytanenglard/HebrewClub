@@ -51,17 +51,19 @@ export const useAdminLearningCourses = () => {
         // Fetch instructors and users
         const instructorsResponse = await handleFetchInstructors();
         const usersResponse = await handleFetchUsersCourse();
-        
+        console.log('response', response);
+        console.log('response.data', response.data);
+        console.log('response', response.data.data);
         // Fetch sections for all courses
-        console.error('allSections');
+        console.log('allSections');
         const allSections = await Promise.all(response.data.data.map(course => handleFetchSections(course.courseId)));
-        console.error('sectionsMap');
+        console.log('sectionsMap');
         const sectionsMap = new Map(allSections.flat().map(section => [section._id, section]));
-        console.error('instructorsMap');
+        console.log('instructorsMap');
         const instructorsMap = new Map(instructorsResponse.map(instructor => [instructor._id, instructor]));
-        console.error('usersMap');
+        console.log('usersMap');
         const usersMap = new Map(usersResponse.map(user => [user._id, user]));
-        console.error('usepopulatedCoursesrsMap');
+        console.log('usepopulatedCoursesrsMap');
         // Convert Course[] to PopulatedCourse[]
         const populatedCourses: PopulatedCourse[] = response.data.data.map(course => ({
           ...course,
