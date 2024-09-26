@@ -99,7 +99,7 @@ const EnrollModal: React.FC<EnrollModalProps> = ({
     },
     [navigate, t]
   );
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form submitted");

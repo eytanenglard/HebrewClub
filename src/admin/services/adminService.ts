@@ -1,4 +1,4 @@
-import adminApi from '../api';
+import adminApi from '../api/index';
 import { User, PaginatedResponse, ApiResponse, UserStats, UserActivity, SystemSettings, Course, Assignment, Payment, Lead, Group, Permission, Role, CourseData } from '../types/models';
 
 const adminService = {

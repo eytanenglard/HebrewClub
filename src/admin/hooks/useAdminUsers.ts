@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { message } from 'antd';
 import { fetchUsers, createUser, updateUser, deleteUser, addCourseToUser, removeCourseFromUser } from '../api/users';
-import { User, UserData, PaginatedResponse} from '../types/models';
+import { User, UserData, ApiResponse,  PaginatedResponse} from '../types/models';
 
 export const useAdminUsers = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -9,8 +9,12 @@ export const useAdminUsers = () => {
   const handleFetchUsers = async (page: number = 1, limit: number = 10, search?: string): Promise<PaginatedResponse<User[]>> => {
     setLoading(true);
     try {
-      const response = await fetchUsers(page, limit, search);
-      return response.data;
+      const response: ApiResponse<PaginatedResponse<User[]>> = await fetchUsers(page, limit, search);
+      if (response.success && response.data) {
+        return response.data; 
+      } else {
+        throw new Error("Invalid response format");
+      }
     } catch (error) {
       console.error('Fetch users error:', error);
       message.error('Failed to fetch users');
