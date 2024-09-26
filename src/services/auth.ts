@@ -1,8 +1,8 @@
 
 import api from './api';
 import { ApiResponse, User, LoginResponse, EmailVerificationRequest, EmailVerificationResponse } from '../admin/types/models';
-import axios from 'axios';
 const LOG_PREFIX = '[auth.ts]';
+import axios, { AxiosResponse } from 'axios';
 
 let csrfToken: string | null = null;
 let tokenExpirationTime: number = 0;
@@ -69,32 +69,54 @@ export const ensureCsrfToken = async (forceRefresh = false): Promise<string | nu
 
 const fetchNewCsrfToken = async (): Promise<string | null> => {
   try {
-    const response = await api.get('/auth/csrf-token');
-    console.log('CSRF Token Response:', response.data, response.headers);
-    const newCsrfToken = response.data.csrfToken;
-    const newSessionId = response.headers['x-session-id'];
+    console.log(`${LOG_PREFIX} Attempting to fetch new CSRF token`);
+    
+    const response: AxiosResponse = await api.get('/auth/csrf-token');
+    
+    console.log(`${LOG_PREFIX} CSRF Token Response:`, response.data, response.headers);
+    
+    const newCsrfToken: string | undefined = response.data.csrfToken;
+    const newSessionId: string | undefined = response.data.sessionId || response.headers['x-session-id'];
     
     if (!newCsrfToken || !newSessionId) {
-      console.error('Missing CSRF token or session ID in response');
+      console.error(`${LOG_PREFIX} Missing CSRF token or session ID in response`);
       throw new Error('Received empty CSRF token or session ID from server');
     }
     
     csrfToken = newCsrfToken;
     tokenExpirationTime = Date.now() + 10 * 60 * 1000; // 10 minutes validity
+    
     localStorage.setItem('sessionId', newSessionId);
+    
     api.defaults.headers.common['X-CSRF-Token'] = csrfToken;
     api.defaults.headers.common['X-Session-ID'] = newSessionId;
     
-    console.log(`${LOG_PREFIX} New CSRF token and session ID set`);
+    console.log(`${LOG_PREFIX} New CSRF token set:`, csrfToken);
+    console.log(`${LOG_PREFIX} New session ID set:`, newSessionId);
+    console.log(`${LOG_PREFIX} Token expiration time set to:`, new Date(tokenExpirationTime).toISOString());
+    
     return csrfToken;
   } catch (error) {
-    console.error(`${LOG_PREFIX} Failed to fetch CSRF token`, error);
+    if (axios.isAxiosError(error)) {
+      console.error(`${LOG_PREFIX} Failed to fetch CSRF token. Axios error:`, error.message);
+      if (error.response) {
+        console.error(`${LOG_PREFIX} Error response:`, error.response.data);
+        console.error(`${LOG_PREFIX} Error status:`, error.response.status);
+        console.error(`${LOG_PREFIX} Error headers:`, error.response.headers);
+      } else if (error.request) {
+        console.error(`${LOG_PREFIX} Error request:`, error.request);
+      }
+    } else {
+      console.error(`${LOG_PREFIX} Failed to fetch CSRF token. Unexpected error:`, error);
+    }
     return null;
   } finally {
     isRefreshing = false;
     refreshPromise = null;
+    console.log(`${LOG_PREFIX} Token refresh process completed`);
   }
 };
+
 
 export const register = async (userData: Partial<User>): Promise<LoginResponse> => {
   try {
