@@ -22,7 +22,7 @@ export const getCourseManagementData = async (): Promise<ApiResponse<PaginatedRe
   try {
     const response = await api.get<ApiResponse<PaginatedResponse<Course[]>>>('/admin/course-content/courses');
     console.log(`${LOG_PREFIX} Course management data fetched successfully:`, response.data);
-    return response.data;
+    return response.data
   } catch (error) {
     console.error(`${LOG_PREFIX} Failed to fetch course management data:`, error);
     throw error;
