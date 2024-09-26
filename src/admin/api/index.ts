@@ -17,7 +17,7 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => {
-    console.log(`${LOG_PREFIX} Incoming response:`, response.status, JSON.stringify(response.data, null, 2));
+    console.log(`${LOG_PREFIX} Incoming response:`, response.status, JSON.stringify(response, null, 2));
     return response;
   },
   (error) => {

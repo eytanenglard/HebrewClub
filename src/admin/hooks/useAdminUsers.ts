@@ -10,6 +10,7 @@ export const useAdminUsers = () => {
     setLoading(true);
     try {
       const response: ApiResponse<PaginatedResponse<User[]>> = await fetchUsers(page, limit, search);
+      console.log('respone--', response);
       if (response.success && response.data) {
         return response.data; 
       } else {
