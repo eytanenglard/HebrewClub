@@ -6,13 +6,13 @@ import { User, UserData, ApiResponse,  PaginatedResponse} from '../types/models'
 export const useAdminUsers = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleFetchUsers = async (page: number = 1, limit: number = 10, search?: string): Promise<PaginatedResponse<User[]>> => {
+  const handleFetchUsers = async (page: number = 1, limit: number = 10, search?: string): Promise<ApiResponse<PaginatedResponse<User[]>>> => {
     setLoading(true);
     try {
       const response: ApiResponse<PaginatedResponse<User[]>> = await fetchUsers(page, limit, search);
       console.log('respone--', response);
       if (response.success && response.data) {
-        return response.data; 
+        return response; 
       } else {
         throw new Error("Invalid response format");
       }
