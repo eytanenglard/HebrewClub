@@ -70,10 +70,12 @@ export const ensureCsrfToken = async (forceRefresh = false): Promise<string | nu
 const fetchNewCsrfToken = async (): Promise<string | null> => {
   try {
     const response = await api.get('/auth/csrf-token');
+    console.log('CSRF Token Response:', response.data, response.headers);
     const newCsrfToken = response.data.csrfToken;
     const newSessionId = response.headers['x-session-id'];
     
     if (!newCsrfToken || !newSessionId) {
+      console.error('Missing CSRF token or session ID in response');
       throw new Error('Received empty CSRF token or session ID from server');
     }
     
