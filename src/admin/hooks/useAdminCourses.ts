@@ -10,7 +10,8 @@ export const useAdminCourses = () => {
     setLoading(true);
     try {
       const response: ApiResponse<PaginatedResponse<Course[]>> = await getCourseManagementData();
-      if (response.success && response.data && response.data.data) {
+      console.log(`response**`, response);
+      if (response.success && response.data) {
         return response.data.data;
       } else {
         throw new Error(response.message || 'Failed to fetch courses');
