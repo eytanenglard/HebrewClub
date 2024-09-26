@@ -45,7 +45,13 @@ export const resetPassword = async (token: string, newPassword: string): Promise
 };
 export const ensureCsrfToken = async (forceRefresh = false): Promise<string | null> => {
   const now = Date.now();
+  const sessionId = localStorage.getItem('sessionId');
   
+  if (!sessionId) {
+    console.log(`${LOG_PREFIX} No session ID found, fetching new CSRF token`);
+    return fetchNewCsrfToken();
+  }
+
   if (csrfToken && now < tokenExpirationTime && !forceRefresh) {
     console.log(`${LOG_PREFIX} Using existing CSRF token`);
     return csrfToken;
@@ -57,23 +63,35 @@ export const ensureCsrfToken = async (forceRefresh = false): Promise<string | nu
   }
 
   isRefreshing = true;
-  refreshPromise = (async () => {
-    try {
-      const newToken = await fetchCsrfToken();
-      if (newToken) {
-        csrfToken = newToken;
-        tokenExpirationTime = now + 10 * 60 * 1000; // 10 minutes validity
-        api.defaults.headers.common['X-CSRF-Token'] = csrfToken;
-        console.log(`${LOG_PREFIX} New CSRF token set`);
-      }
-      return csrfToken;
-    } finally {
-      isRefreshing = false;
-      refreshPromise = null;
-    }
-  })();
-
+  refreshPromise = fetchNewCsrfToken();
   return refreshPromise;
+};
+
+const fetchNewCsrfToken = async (): Promise<string | null> => {
+  try {
+    const response = await api.get('/auth/csrf-token');
+    const newCsrfToken = response.data.csrfToken;
+    const newSessionId = response.headers['x-session-id'];
+    
+    if (!newCsrfToken || !newSessionId) {
+      throw new Error('Received empty CSRF token or session ID from server');
+    }
+    
+    csrfToken = newCsrfToken;
+    tokenExpirationTime = Date.now() + 10 * 60 * 1000; // 10 minutes validity
+    localStorage.setItem('sessionId', newSessionId);
+    api.defaults.headers.common['X-CSRF-Token'] = csrfToken;
+    api.defaults.headers.common['X-Session-ID'] = newSessionId;
+    
+    console.log(`${LOG_PREFIX} New CSRF token and session ID set`);
+    return csrfToken;
+  } catch (error) {
+    console.error(`${LOG_PREFIX} Failed to fetch CSRF token`, error);
+    return null;
+  } finally {
+    isRefreshing = false;
+    refreshPromise = null;
+  }
 };
 
 export const register = async (userData: Partial<User>): Promise<LoginResponse> => {

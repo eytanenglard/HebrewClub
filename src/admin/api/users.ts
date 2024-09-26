@@ -33,5 +33,3 @@ export const removeCourseFromUser = (userId: string, courseId: string): Promise<
   console.log(`${LOG_PREFIX} Removing course from user`, userId, courseId);
   return adminApi.delete(`/admin/users/${userId}/courses/${courseId}`);
 };
-
-// Export other functions as needed
