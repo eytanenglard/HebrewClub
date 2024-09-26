@@ -45,6 +45,9 @@ export const resetPassword = async (token: string, newPassword: string): Promise
 };
 export const ensureCsrfToken = async (forceRefresh = false): Promise<string | null> => {
   const now = Date.now();
+  if (csrfToken && now < tokenExpirationTime && !forceRefresh) {
+    return csrfToken;
+  }
   const sessionId = localStorage.getItem('sessionId');
   
   if (!sessionId) {

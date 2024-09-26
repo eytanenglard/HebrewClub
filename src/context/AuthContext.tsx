@@ -205,7 +205,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     checkAuthRef.current = setInterval(() => {
       checkAuthStatus();
-    }, 5 * 60 * 1000); // Check every 5 minutes
+    }, 30 * 60 * 1000); // Check every 5 minutes
 
     return () => {
       if (checkAuthRef.current) {
