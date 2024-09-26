@@ -12,12 +12,7 @@ import {
   Tag,
   Tabs,
 } from "antd";
-import {
-  PopulatedCourse,
-  CourseData,
-  User,
-  Section,
-} from "../../types/models";
+import { PopulatedCourse, CourseData, User, Section } from "../../types/models";
 import { useAdminLearningCourses } from "../../hooks/useAdminLearningCourses";
 import dayjs from "dayjs";
 import {
@@ -31,7 +26,7 @@ import {
   DeleteOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { DragDropContext, Droppable} from "react-beautiful-dnd";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import CourseContentManagement from "../CourseContentManagement/CourseContentManagement";
 import styles from "./CourseManagement.module.css";
 
@@ -71,6 +66,7 @@ const CourseManagement: React.FC = () => {
   const fetchFullCourseData = async () => {
     try {
       const coursesResponse = await fetchCourses();
+      console.log("coursesResponse", coursesResponse);
       if (Array.isArray(coursesResponse)) {
         const coursesData = coursesResponse;
 
@@ -80,7 +76,10 @@ const CourseManagement: React.FC = () => {
             fetchUsersCourse(),
             fetchAllSections(),
           ]);
-
+        console.log("instructorsResponse", instructorsResponse);
+        console.log("usersResponse", usersResponse);
+        console.log("allSectionsResponse", allSectionsResponse);
+        
         const instructorsMap = new Map(
           instructorsResponse.map((instructor: User) => [
             instructor._id,
