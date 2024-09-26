@@ -45,27 +45,28 @@ export const useAdminLearningCourses = () => {
   const handleFetchCourses = async (): Promise<PopulatedCourse[]> => {
     setLoading(true);
     try {
-      const response: ApiResponse<PaginatedResponse<Course[]>> = await fetchCoursesAPI();
+      const response: ApiResponse<PaginatedResponse<Course[]> | Course[]> = await fetchCoursesAPI();
       
       if (response.success && response.data) {
         // Fetch instructors and users
         const instructorsResponse = await handleFetchInstructors();
         const usersResponse = await handleFetchUsersCourse();
-        console.log('response', response);
-        console.log('response.data', response.data);
-        console.log('response.data.data', response.data.data);
+        
+        // Determine if the response is paginated or not
+        const courses = Array.isArray(response.data) ? response.data : response.data.data;
+        
+        if (!Array.isArray(courses)) {
+          throw new Error('Unexpected response format');
+        }
+  
         // Fetch sections for all courses
-        console.log('allSections');
-        const allSections = await Promise.all(response.data.data.map(course => handleFetchSections(course.courseId)));
-        console.log('sectionsMap');
+        const allSections = await Promise.all(courses.map(course => handleFetchSections(course.courseId)));
         const sectionsMap = new Map(allSections.flat().map(section => [section._id, section]));
-        console.log('instructorsMap');
         const instructorsMap = new Map(instructorsResponse.map(instructor => [instructor._id, instructor]));
-        console.log('usersMap');
         const usersMap = new Map(usersResponse.map(user => [user._id, user]));
-        console.log('usepopulatedCoursesrsMap');
+  
         // Convert Course[] to PopulatedCourse[]
-        const populatedCourses: PopulatedCourse[] = response.data.data.map(course => ({
+        const populatedCourses: PopulatedCourse[] = courses.map(course => ({
           ...course,
           instructors: course.instructors.map(id => instructorsMap.get(id)).filter((instructor): instructor is User => !!instructor),
           users: course.users.map(id => usersMap.get(id)).filter((user): user is User => !!user),
@@ -84,7 +85,6 @@ export const useAdminLearningCourses = () => {
       setLoading(false);
     }
   };
-  
   const handleFetchInstructors = async (): Promise<User[]> => {
     setLoading(true);
     try {
