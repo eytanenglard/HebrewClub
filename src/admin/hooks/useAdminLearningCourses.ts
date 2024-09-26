@@ -53,12 +53,15 @@ export const useAdminLearningCourses = () => {
         const usersResponse = await handleFetchUsersCourse();
         
         // Fetch sections for all courses
+        console.error('allSections');
         const allSections = await Promise.all(response.data.data.map(course => handleFetchSections(course.courseId)));
+        console.error('sectionsMap');
         const sectionsMap = new Map(allSections.flat().map(section => [section._id, section]));
-  
+        console.error('instructorsMap');
         const instructorsMap = new Map(instructorsResponse.map(instructor => [instructor._id, instructor]));
+        console.error('usersMap');
         const usersMap = new Map(usersResponse.map(user => [user._id, user]));
-  
+        console.error('usepopulatedCoursesrsMap');
         // Convert Course[] to PopulatedCourse[]
         const populatedCourses: PopulatedCourse[] = response.data.data.map(course => ({
           ...course,
@@ -101,6 +104,7 @@ export const useAdminLearningCourses = () => {
   const handleFetchAllSections = async (): Promise<Section[]> => {
     setLoading(true);
     try {
+      console.error('hey---------:');
       const coursesResponse = await handleFetchCourses();
       if (Array.isArray(coursesResponse)) {
         const allSectionsPromises = coursesResponse.map(course => handleFetchSections(course.courseId));
