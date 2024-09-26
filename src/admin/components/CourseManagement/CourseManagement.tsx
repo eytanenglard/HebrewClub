@@ -65,6 +65,7 @@ const CourseManagement: React.FC = () => {
 
   const fetchFullCourseData = async () => {
     try {
+      console.log("coursesResponse-----");
       const coursesResponse = await fetchCourses();
       console.log("coursesResponse", coursesResponse);
       if (Array.isArray(coursesResponse)) {
@@ -79,7 +80,7 @@ const CourseManagement: React.FC = () => {
         console.log("instructorsResponse", instructorsResponse);
         console.log("usersResponse", usersResponse);
         console.log("allSectionsResponse", allSectionsResponse);
-        
+
         const instructorsMap = new Map(
           instructorsResponse.map((instructor: User) => [
             instructor._id,
