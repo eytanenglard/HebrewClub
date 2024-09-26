@@ -17,12 +17,12 @@ import {
 import { LOG_PREFIX } from './index';
 
 // Course management
-export const getCourseManagementData = async (): Promise<ApiResponse<PaginatedResponse<Course[]>>> => {
+export const getCourseManagementData = async (): Promise<Course[]> => {
   console.log(`${LOG_PREFIX} Fetching course management data`);
   try {
     const response = await api.get<ApiResponse<PaginatedResponse<Course[]>>>('/admin/course-content/courses');
     console.log(`${LOG_PREFIX} Course management data fetched successfully:`, response.data);
-    return response.data;
+    return response.data.data.data;
   } catch (error) {
     console.error(`${LOG_PREFIX} Failed to fetch course management data:`, error);
     throw error;

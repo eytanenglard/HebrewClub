@@ -9,13 +9,12 @@ export const useAdminCourses = () => {
   const handleFetchCourses = async (): Promise<Course[]> => {
     setLoading(true);
     try {
-      const response: ApiResponse<PaginatedResponse<Course[]>> = await getCourseManagementData();
+      const response: Course[] = await getCourseManagementData();
       console.log(`response***`, response);
-      if (response.success && response.data) {
-        console.log(`heyyy*** response.data.data`, response.data.data);
-        return response.data.data;
+      if (response) {
+        return response;
       } else {
-        throw new Error(response.message || 'Failed to fetch courses');
+        throw new Error(response || 'Failed to fetch courses');
       }
     } catch (error) {
       console.error('Fetch courses error:', error);
