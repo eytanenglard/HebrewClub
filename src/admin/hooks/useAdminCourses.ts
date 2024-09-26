@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { message } from 'antd';
 import { getCourseManagementData, createCourse, updateCourse, deleteCourse, addUserToCourse, removeUserFromCourse } from '../api/courses';
-import { Course, CourseData, ApiResponse, PaginatedResponse } from '../types/models';
+import { Course, CourseData} from '../types/models';
 
 export const useAdminCourses = () => {
   const [loading, setLoading] = useState<boolean>(false);
