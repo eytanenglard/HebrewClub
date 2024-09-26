@@ -45,7 +45,8 @@ export const useAdminLearningCourses = () => {
   const handleFetchCourses = async (): Promise<PopulatedCourse[]> => {
     setLoading(true);
     try {
-      const response: ApiResponse<PaginatedResponse<Course[]>> = (await fetchCoursesAPI());
+      const response: ApiResponse<PaginatedResponse<Course[]>> = await fetchCoursesAPI();
+      
       if (response.success && response.data) {
         // Fetch instructors and users
         const instructorsResponse = await handleFetchInstructors();
