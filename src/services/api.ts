@@ -18,12 +18,6 @@ const protectedRoutes = ['/auth/verify-email','/auth/resend-verification', '/api
 api.interceptors.request.use(async (config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> => {
   console.log(`${LOG_PREFIX} Sending ${config.method} request to: ${config.url}`);
   
-  if (config.method?.toLowerCase() === 'get' && config.url === '/auth/login') {
-    console.log(`${LOG_PREFIX} Intercepted GET request to /auth/login`);
-    config.cancelToken = new axios.CancelToken((cancel) => cancel('GET requests to /auth/login are not supported'));
-    return config;
-  }
-
   console.log(`${LOG_PREFIX} Request headers:`, config.headers);
   console.log(`${LOG_PREFIX} Request data:`, config.data);
   const token = localStorage.getItem('token');
