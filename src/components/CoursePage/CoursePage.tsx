@@ -41,15 +41,11 @@ const CoursePage: React.FC<CoursePageProps> = ({ courseId, user }) => {
   useEffect(() => {
     const loadCourse = async () => {
       try {
-        const response = await fetchCourseFromServer(courseId);
-        if (response.success && response.data) {
-          setCourse(response.data);
-          setCurrentSection(response.data.sections[0]);
-          setCurrentLesson(response.data.sections[0].lessons[0]);
-          setFilteredLessons(getAllLessons(response.data));
-        } else {
-          throw new Error(response.message || "Failed to load course data");
-        }
+        const fetchedCourse = await fetchCourseFromServer(courseId);
+        setCourse(fetchedCourse);
+        setCurrentSection(fetchedCourse.sections[0]);
+        setCurrentLesson(fetchedCourse.sections[0].lessons[0]);
+        setFilteredLessons(getAllLessons(fetchedCourse));
       } catch (err) {
         setError("שגיאה בטעינת נתוני הקורס");
         console.error("Error loading course:", err);

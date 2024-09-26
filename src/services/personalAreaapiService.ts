@@ -92,7 +92,6 @@ export const fetchCourseFromServer = async (courseId: string): Promise<Populated
   console.log(`${LOG_PREFIX} Attempting to fetch course content for courseId: ${courseId}`);
   return handleApiCall(() => api.get<ApiResponse<PopulatedCoursefull>>(`/admin/course-content/courses/${courseId}/content`));
 };
-
 const apiService = {
   getUserProfile: () => handleApiCall(() => api.get<ApiResponse<UserResponse>>('/api/personal-area/profile')),
   updateUserProfile: (profileData: Partial<UserProfile>) => handleApiCall(() => api.put<ApiResponse<UserResponse>>('/api/personal-area/profile', profileData)),
