@@ -1,60 +1,6 @@
-import axios, { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { ensureCsrfToken } from './auth';
+import api from './api';
 
 const LOG_PREFIX = '[emailService.ts]';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-console.log(`${LOG_PREFIX} API_BASE_URL:`, API_BASE_URL);
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  withCredentials: true,
-});
-
-api.interceptors.request.use(async (config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> => {
-  console.log(`${LOG_PREFIX} Sending ${config.method} request to: ${config.url}`);
-  console.log(`${LOG_PREFIX} Request headers:`, config.headers);
-  console.log(`${LOG_PREFIX} Request data:`, config.data);
-  
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  const csrfToken = await ensureCsrfToken();
-  if (csrfToken) {
-    config.headers['X-CSRF-Token'] = csrfToken;
-    console.log(`${LOG_PREFIX} Added CSRF token to request`);
-  }
-
-  return config;
-});
-
-api.interceptors.response.use(
-  (response: AxiosResponse) => {
-    console.log(`${LOG_PREFIX} Response received:`, {
-      status: response.status,
-      statusText: response.statusText,
-      data: response.data
-    });
-    return response;
-  },
-  (error: unknown) => {
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError;
-      if (axiosError.response) {
-        console.error(`${LOG_PREFIX} API Error:`, axiosError.response.status, axiosError.response.data);
-      } else if (axiosError.request) {
-        console.error(`${LOG_PREFIX} No response received:`, axiosError.request);
-      } else {
-        console.error(`${LOG_PREFIX} Error setting up request:`, axiosError.message);
-      }
-    } else {
-      console.error(`${LOG_PREFIX} Non-Axios error:`, error);
-    }
-    return Promise.reject(error);
-  }
-);
 
 export const sendWelcomeEmail = async (to: string, name: string, temporaryPassword: string): Promise<boolean> => {
   console.log(`${LOG_PREFIX} Sending welcome email to:`, to);
@@ -204,6 +150,7 @@ export const sendWelcomeEmailWithCourseDetails = async (
 
 export default {
   sendWelcomeEmail,
+  sendCourseWelcomeEmail,
   sendPasswordResetEmail,
   sendCoursePurchaseConfirmation,
   sendEmailVerification,
@@ -212,6 +159,5 @@ export default {
   sendLessonCancellationNotice,
   sendPaymentConfirmation,
   sendContactFormSubmission,
-  sendWelcomeEmailWithCourseDetails,
-  sendCourseWelcomeEmail
+  sendWelcomeEmailWithCourseDetails
 };
