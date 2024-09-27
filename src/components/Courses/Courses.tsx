@@ -138,13 +138,34 @@ const CourseCard: React.FC<CourseCardProps> = React.memo(({ course, onEnroll }) 
   );
 });
 
+// EnrollModal wrapper component
+const EnrollModalWrapper = React.memo(({ 
+  selectedCourse, 
+  showModal, 
+  onClose 
+}: {
+  selectedCourse: Course | null;
+  showModal: boolean;
+  onClose: () => void;
+}) => {
+  if (!selectedCourse) return null;
+  
+  return (
+    <EnrollModal
+      isOpen={showModal}
+      onClose={onClose}
+      course={selectedCourse}
+    />
+  );
+});
+
 // Main Courses component
 const Courses: React.FC = () => {
   const { t } = useTranslation();
   const [primaryFilters, setPrimaryFilters] = useState<string[]>([]);
   const [secondaryFilters, setSecondaryFilters] = useState<string[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -199,14 +220,17 @@ const Courses: React.FC = () => {
   }, [courses, primaryFilters, secondaryFilters]);
 
   const handleEnroll = useCallback((courseId: string) => {
-    const course = courses.find((c) => c._id.toString() === courseId);
-    if (course) {
-      setSelectedCourse(course);
-      setShowModal(true);
-    } else {
-      console.error("Course not found for ID:", courseId);
-    }
-  }, [courses]);
+    setSelectedCourseId(courseId);
+    setShowModal(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setShowModal(false);
+  }, []);
+
+  const selectedCourse = useMemo(() => {
+    return courses.find(c => c._id.toString() === selectedCourseId) || null;
+  }, [courses, selectedCourseId]);
 
   const primaryFilterOptions = useMemo(() => [
     { value: "all", icon: "fa-th-large", label: "כל הקורסים" },
@@ -274,13 +298,11 @@ const Courses: React.FC = () => {
           </AnimatePresence>
         </motion.div>
       </div>
-      {selectedCourse && (
-        <EnrollModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          course={selectedCourse}
-        />
-      )}
+      <EnrollModalWrapper
+        selectedCourse={selectedCourse}
+        showModal={showModal}
+        onClose={handleCloseModal}
+      />
     </section>
   );
 };
