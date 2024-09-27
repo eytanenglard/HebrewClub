@@ -3,6 +3,7 @@ import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { verifyEmail, resendVerificationEmail } from "../../services/auth";
 import { EmailVerificationRequest } from "../../admin/types/models";
+import { useAuth } from "../../context/AuthContext";
 import styles from "./VerifyEmail.module.css";
 import { FaCheck, FaMoon, FaSun } from "react-icons/fa";
 
@@ -14,17 +15,18 @@ const VerifyEmail: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [darkMode, setDarkMode] = useState(false);
-  const [verificationMethod, setVerificationMethod] = useState<
-    "token" | "code"
-  >("token");
+  const [verificationMethod, setVerificationMethod] = useState<"token" | "code">("token");
 
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
+    console.log("VerifyEmail component mounted");
     const searchParams = new URLSearchParams(location.search);
     const tokenFromUrl = searchParams.get("token");
+    console.log("Token from URL:", tokenFromUrl);
     if (tokenFromUrl) {
       setToken(tokenFromUrl);
       handleVerify(tokenFromUrl);
@@ -36,6 +38,13 @@ const VerifyEmail: React.FC = () => {
       setDarkMode(JSON.parse(savedDarkMode));
     }
   }, [location]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      console.log("User is already logged in, redirecting to home");
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
 
   useEffect(() => {
     if (success) {
@@ -53,6 +62,7 @@ const VerifyEmail: React.FC = () => {
   }, [success, navigate]);
 
   const handleVerify = async (verificationToken?: string) => {
+    console.log("Starting verification process");
     setIsLoading(true);
     try {
       let verificationData: EmailVerificationRequest = {};
@@ -61,13 +71,16 @@ const VerifyEmail: React.FC = () => {
       } else {
         verificationData.code = code;
       }
+      console.log("Verification data:", verificationData);
       const response = await verifyEmail(verificationData);
+      console.log("Verification response:", response);
       if (response.success) {
         setSuccess(true);
       } else {
         setError(t("verifyEmail.verificationFailed"));
       }
     } catch (err) {
+      console.error("Verification error:", err);
       setError(t("verifyEmail.verificationFailed"));
     } finally {
       setIsLoading(false);
@@ -75,9 +88,11 @@ const VerifyEmail: React.FC = () => {
   };
 
   const handleResendVerification = async () => {
+    console.log("Resending verification email");
     setIsLoading(true);
     try {
       const response = await resendVerificationEmail(token);
+      console.log("Resend verification response:", response);
       if (response.success) {
         setError("");
         setSuccess(true);
@@ -85,6 +100,7 @@ const VerifyEmail: React.FC = () => {
         setError(t("verifyEmail.resendFailed"));
       }
     } catch (err) {
+      console.error("Resend verification error:", err);
       setError(t("verifyEmail.resendFailed"));
     } finally {
       setIsLoading(false);
@@ -99,9 +115,7 @@ const VerifyEmail: React.FC = () => {
 
   if (success) {
     return (
-      <div
-        className={`${styles.pageContainer} ${darkMode ? styles.darkMode : ""}`}
-      >
+      <div className={`${styles.pageContainer} ${darkMode ? styles.darkMode : ""}`}>
         <div className={styles.verifyEmailContainer}>
           <div className={styles.successMessage}>
             <FaCheck className={styles.icon} />
@@ -114,21 +128,17 @@ const VerifyEmail: React.FC = () => {
   }
 
   return (
-    <div
-      className={`${styles.pageContainer} ${darkMode ? styles.darkMode : ""}`}
-    >
+    <div className={`${styles.pageContainer} ${darkMode ? styles.darkMode : ""}`}>
       <button onClick={toggleDarkMode} className={styles.darkModeToggle}>
         {darkMode ? <FaSun /> : <FaMoon />}
       </button>
       <div className={styles.verifyEmailContainer}>
         <h2>{t("verifyEmail.title")}</h2>
         {error && <div className={styles.error}>{error}</div>}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleVerify();
-          }}
-        >
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          handleVerify();
+        }}>
           <div className={styles.inputGroup}>
             <label>
               <input
