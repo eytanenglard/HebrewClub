@@ -30,14 +30,16 @@ const VerifyEmail: React.FC = () => {
     const emailFromUrl = searchParams.get("email");
     console.log("Token from URL:", tokenFromUrl);
     console.log("Email from URL:", emailFromUrl);
+    
     if (tokenFromUrl) {
       setToken(tokenFromUrl);
+      setVerificationMethod("token");
     }
     if (emailFromUrl) {
-      setEmail(emailFromUrl);
+      setEmail(decodeURIComponent(emailFromUrl));
     }
     if (tokenFromUrl && emailFromUrl) {
-      handleVerify(tokenFromUrl, emailFromUrl);
+      handleVerify(tokenFromUrl, decodeURIComponent(emailFromUrl));
     }
 
     // Check for saved dark mode preference
@@ -72,6 +74,7 @@ const VerifyEmail: React.FC = () => {
   const handleVerify = async (verificationToken?: string, userEmail?: string) => {
     console.log("Starting verification process");
     setIsLoading(true);
+    setError("");
     try {
       let verificationData: EmailVerificationRequest = { email: userEmail || email };
       if (verificationMethod === "token") {
@@ -98,12 +101,13 @@ const VerifyEmail: React.FC = () => {
   const handleResendVerification = async () => {
     console.log("Resending verification email");
     setIsLoading(true);
+    setError("");
     try {
       const response = await resendVerificationEmail(email);
       console.log("Resend verification response:", response);
       if (response.success) {
         setError("");
-        setSuccess(true);
+        alert(t("verifyEmail.resendSuccess"));
       } else {
         setError(t("verifyEmail.resendFailed"));
       }
@@ -182,6 +186,7 @@ const VerifyEmail: React.FC = () => {
               onChange={(e) => setToken(e.target.value)}
               placeholder={t("verifyEmail.tokenPlaceholder")}
               className={styles.input}
+              required
             />
           ) : (
             <input
@@ -190,6 +195,7 @@ const VerifyEmail: React.FC = () => {
               onChange={(e) => setCode(e.target.value)}
               placeholder={t("verifyEmail.codePlaceholder")}
               className={styles.input}
+              required
             />
           )}
           <button type="submit" className={styles.button} disabled={isLoading}>
