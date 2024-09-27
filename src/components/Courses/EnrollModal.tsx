@@ -96,12 +96,12 @@ const EnrollModal: React.FC<EnrollModalProps> = React.memo(({
           ...formData,
           courseInterest: [course._id.toString()],
         });
-        if (response.success && response.user && response.user._id) {
+        if (response.success && response.data) {
           setFormData((prevData) => ({
             ...prevData,
-            _id: (response.user as Lead)._id,
+            _id: response.data._id,
           }));
-          handleEnrollment(response.user._id);
+          handleEnrollment(response.data._id);
         } else {
           throw new Error(response.error || "Enrollment failed or invalid response data");
         }
@@ -116,7 +116,6 @@ const EnrollModal: React.FC<EnrollModalProps> = React.memo(({
       }
     }
   }, [formData, course._id, validateForm, handleEnrollment, t]);
-
   const handleContactRequest = useCallback(async () => {
     setIsSubmitting(true);
     try {
