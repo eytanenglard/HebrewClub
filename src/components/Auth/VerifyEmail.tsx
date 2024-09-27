@@ -10,6 +10,7 @@ import { FaCheck, FaMoon, FaSun } from "react-icons/fa";
 const VerifyEmail: React.FC = () => {
   const [token, setToken] = useState("");
   const [code, setCode] = useState("");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,10 +27,17 @@ const VerifyEmail: React.FC = () => {
     console.log("VerifyEmail component mounted");
     const searchParams = new URLSearchParams(location.search);
     const tokenFromUrl = searchParams.get("token");
+    const emailFromUrl = searchParams.get("email");
     console.log("Token from URL:", tokenFromUrl);
+    console.log("Email from URL:", emailFromUrl);
     if (tokenFromUrl) {
       setToken(tokenFromUrl);
-      handleVerify(tokenFromUrl);
+    }
+    if (emailFromUrl) {
+      setEmail(emailFromUrl);
+    }
+    if (tokenFromUrl && emailFromUrl) {
+      handleVerify(tokenFromUrl, emailFromUrl);
     }
 
     // Check for saved dark mode preference
@@ -61,11 +69,11 @@ const VerifyEmail: React.FC = () => {
     }
   }, [success, navigate]);
 
-  const handleVerify = async (verificationToken?: string) => {
+  const handleVerify = async (verificationToken?: string, userEmail?: string) => {
     console.log("Starting verification process");
     setIsLoading(true);
     try {
-      let verificationData: EmailVerificationRequest = {};
+      let verificationData: EmailVerificationRequest = { email: userEmail || email };
       if (verificationMethod === "token") {
         verificationData.token = verificationToken || token;
       } else {
@@ -91,7 +99,7 @@ const VerifyEmail: React.FC = () => {
     console.log("Resending verification email");
     setIsLoading(true);
     try {
-      const response = await resendVerificationEmail(token);
+      const response = await resendVerificationEmail(email);
       console.log("Resend verification response:", response);
       if (response.success) {
         setError("");
@@ -159,6 +167,14 @@ const VerifyEmail: React.FC = () => {
               {t("verifyEmail.useCode")}
             </label>
           </div>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={t("verifyEmail.emailPlaceholder")}
+            className={styles.input}
+            required
+          />
           {verificationMethod === "token" ? (
             <input
               type="text"
@@ -183,7 +199,7 @@ const VerifyEmail: React.FC = () => {
         <button
           onClick={handleResendVerification}
           className={styles.resendButton}
-          disabled={isLoading}
+          disabled={isLoading || !email}
         >
           {t("verifyEmail.resend")}
         </button>

@@ -51,6 +51,7 @@ export interface EmailVerificationResponse {
   error?: string;
 }
 export interface EmailVerificationRequest {
+  email: string;
   token?: string;
   code?: string;
 }
