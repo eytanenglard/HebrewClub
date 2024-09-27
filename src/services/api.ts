@@ -13,7 +13,7 @@ const api = axios.create({
   withCredentials: true,
 });
 
-const protectedRoutes = ['/auth/verify-email','/auth/resend-verification', '/api/user', '/api/courses', '/auth/checkAuth', '/auth/current-user', '/auth/refresh-token', 'api/leads'];
+const protectedRoutes = ['/auth/resend-verification', '/api/user', '/api/courses', '/auth/checkAuth', '/auth/current-user', '/auth/refresh-token', 'api/leads'];
 
 api.interceptors.request.use(async (config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> => {
   console.log(`${LOG_PREFIX} Sending ${config.method} request to: ${config.url}`);
