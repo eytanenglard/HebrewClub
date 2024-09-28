@@ -132,8 +132,10 @@ export const register = async (userData: Partial<User>): Promise<LoginResponse> 
       localStorage.setItem('token', response.data.token);
       console.log(`${LOG_PREFIX} User registered successfully. Token saved.`);
     }
-    console.log(response);
-    console.log(response.data);
+    console.log('response',response);
+    console.log('response.data',response.data);
+    console.log('response.data.token',response.data.token);
+    console.log('response.data.user',response.data.user);
     return response.data;
   } catch (error: unknown) {
     
