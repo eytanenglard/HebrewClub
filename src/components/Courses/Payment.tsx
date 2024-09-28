@@ -17,7 +17,7 @@ import {
   UserData,
 } from "../../admin/types/models";
 import styles from "./Payment.module.css";
-import {register, getCurrentUser } from "../../services/auth";
+import { register, getCurrentUser } from "../../services/auth";
 import emailService from "../../services/emailService";
 
 // Interfaces for SUMIT API
@@ -189,6 +189,7 @@ const PaymentPage: React.FC = () => {
   const [payingForCourseId, setPayingForCourseId] = useState<string | null>(
     null
   );
+  const [detailedError, setDetailedError] = useState<string | null>(null);
 
   useEffect(() => {
     console.log("PaymentPage component mounted");
@@ -487,38 +488,45 @@ const PaymentPage: React.FC = () => {
   };
 
   const handleUserAndCourseAssociation = async (courseId: string) => {
-    if (!enrollmentDetails || !courseDetails) return;
+    if (!enrollmentDetails || !courseDetails) {
+      console.error("Missing enrollment or course details");
+      setDetailedError("Missing enrollment or course details");
+      return;
+    }
 
     try {
-      // Check if user exists
+      console.log("Checking for existing user");
       const existingUser = await getCurrentUser();
 
       let user: User;
       let temporaryPassword: string | null = null;
 
       if (existingUser) {
-        // User exists, associate course with the existing user
+        console.log("Existing user found, associating course");
         user = existingUser;
         await apiAssociateCourseWithUser(user._id, courseId);
+        console.log("Course associated with existing user");
       } else {
-        // User doesn't exist, create a new user
+        console.log("Creating new user");
         temporaryPassword = generateTemporaryPassword();
         const newUser = await createNewUser(temporaryPassword);
         if (newUser) {
           user = newUser;
+          console.log("New user created, associating course");
           await apiAssociateCourseWithUser(user._id, courseId);
+          console.log("Course associated with new user");
         } else {
           throw new Error("Failed to create new user");
         }
       }
 
-      // Update lead status
+      console.log("Updating lead status");
       await updateLead(enrollmentDetails._id, {
         status: "qualified",
         paymentCompleted: true,
       });
 
-      // Send welcome email with course details
+      console.log("Sending welcome email");
       await emailService.sendWelcomeEmailWithCourseDetails(
         user.email,
         user.name,
@@ -527,9 +535,16 @@ const PaymentPage: React.FC = () => {
         courseDetails.title,
         dayjs(courseDetails.startDate).format("MMMM D, YYYY")
       );
+
+      console.log("User and course association completed successfully");
     } catch (error) {
       console.error("Error handling user and course association:", error);
-      setError(t("paymentPage.errors.userAssociationFailed"));
+      setDetailedError(
+        `Error in course association: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+      throw error;
     }
   };
 
@@ -579,10 +594,14 @@ const PaymentPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!enrollmentDetails || !courseDetails || !payingForCourseId) return;
+    if (!enrollmentDetails || !courseDetails || !payingForCourseId) {
+      setDetailedError("Missing essential details for payment");
+      return;
+    }
 
     setIsProcessing(true);
     setError(null);
+    setDetailedError(null);
 
     try {
       const sumitResponse = await processSumitPayment(paymentDetails);
@@ -596,11 +615,13 @@ const PaymentPage: React.FC = () => {
         const { Data, Status, UserErrorMessage } = sumitResponse;
 
         if (Status === 0 && Data) {
-          setPaymentSuccess(true);
-          setTransactionDetails(sumitResponse);
+          console.log("Payment successful, proceeding to associate course");
 
           // After successful payment, associate only the paid course
           await handleUserAndCourseAssociation(payingForCourseId);
+
+          setPaymentSuccess(true);
+          setTransactionDetails(sumitResponse);
         } else {
           throw new Error(
             UserErrorMessage || t("paymentPage.errors.paymentNotSuccessful")
@@ -611,12 +632,15 @@ const PaymentPage: React.FC = () => {
         throw new Error(t("paymentPage.errors.unexpectedResponseStructure"));
       }
     } catch (error) {
-      console.error("Payment processing error:", error);
+      console.error("Error in handleSubmit:", error);
       if (error instanceof Error) {
         setError(error.message);
+        setDetailedError(`Detailed error: ${error.message}\n${error.stack}`);
       } else {
         setError(t("paymentPage.errors.unknownError"));
+        setDetailedError(`Unknown error occurred: ${JSON.stringify(error)}`);
       }
+      setPaymentSuccess(false);
     } finally {
       setIsProcessing(false);
     }
@@ -708,6 +732,13 @@ const PaymentPage: React.FC = () => {
           </p>
         )}
       </div>
+      {error && <div className={styles.errorMessage}>{error}</div>}
+      {detailedError && (
+        <div className={styles.detailedErrorMessage}>
+          <h3>Detailed Error Information:</h3>
+          <pre>{detailedError}</pre>
+        </div>
+      )}
       <div className={styles.courseDetails}>
         <h3>{t("paymentPage.courseDetails")}</h3>
         <p>
