@@ -17,7 +17,7 @@ import {
   UserData,
 } from "../../admin/types/models";
 import styles from "./Payment.module.css";
-import { register, getCurrentUser } from "../../services/auth";
+import { register, getCurrentUser } from "../../services/api";
 import emailService from "../../services/emailService";
 
 // Interfaces for SUMIT API
