@@ -493,39 +493,39 @@ const PaymentPage: React.FC = () => {
       setDetailedError("Missing enrollment or course details");
       return;
     }
-
+  
     try {
       console.log("Checking for existing user");
       const existingUser = await getCurrentUser();
-
+  
       let user: User;
       let temporaryPassword: string | null = null;
-
+  
       if (existingUser) {
         console.log("Existing user found, associating course");
         user = existingUser;
-        await apiAssociateCourseWithUser(user._id, courseId);
-        console.log("Course associated with existing user");
       } else {
         console.log("Creating new user");
         temporaryPassword = generateTemporaryPassword();
         const newUser = await createNewUser(temporaryPassword);
         if (newUser) {
           user = newUser;
-          console.log("New user created, associating course");
-          await apiAssociateCourseWithUser(user._id, courseId);
-          console.log("Course associated with new user");
+          console.log("New user created:", user);
         } else {
           throw new Error("Failed to create new user");
         }
       }
-
+  
+      console.log("Attempting to associate course", courseId, "with user", user._id);
+      await apiAssociateCourseWithUser(user._id, courseId);
+      console.log("Course associated successfully");
+  
       console.log("Updating lead status");
       await updateLead(enrollmentDetails._id, {
         status: "qualified",
         paymentCompleted: true,
       });
-
+  
       console.log("Sending welcome email");
       await emailService.sendWelcomeEmailWithCourseDetails(
         user.email,
@@ -535,7 +535,7 @@ const PaymentPage: React.FC = () => {
         courseDetails.title,
         dayjs(courseDetails.startDate).format("MMMM D, YYYY")
       );
-
+  
       console.log("User and course association completed successfully");
     } catch (error) {
       console.error("Error handling user and course association:", error);
@@ -547,7 +547,6 @@ const PaymentPage: React.FC = () => {
       throw error;
     }
   };
-
   function generateUsername(name: string, email: string): string {
     // Remove spaces and special characters from the name
     const cleanName = name.toLowerCase().replace(/[^a-z0-9]/g, "");
