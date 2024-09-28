@@ -132,8 +132,11 @@ export const register = async (userData: Partial<User>): Promise<LoginResponse> 
       localStorage.setItem('token', response.data.token);
       console.log(`${LOG_PREFIX} User registered successfully. Token saved.`);
     }
+    console.log(response);
+    console.log(response.data);
     return response.data;
   } catch (error: unknown) {
+    
     console.error(`${LOG_PREFIX} Registration failed`, error);
     if (error instanceof Error) {
       throw new Error(`Registration failed: ${error.message}`);
