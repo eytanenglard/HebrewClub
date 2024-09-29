@@ -500,8 +500,8 @@ const PaymentPage: React.FC = () => {
 
       let user: User;
       let temporaryPassword: string | null = null;
-
-      if (existingUser && existingUser != null) {
+      console.log("existingUser-----------", existingUser);
+      if (existingUser) {
         console.log("Existing user found, associating course");
         user = existingUser;
       } else {
