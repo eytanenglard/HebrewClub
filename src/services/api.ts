@@ -250,9 +250,15 @@ export const createLead = async (leadData: Partial<Lead>): Promise<Lead> => {
 export const getCurrentUser = async (): Promise<User> => {
   console.log(`${LOG_PREFIX} Fetching current user`);
   try {
-    const response = await api.get<User>('/auth/current-user');
+    const response = await api.get<ApiResponse<User>>('/auth/current-user');
+    if (response.data.success) {  
     console.log(`${LOG_PREFIX} Current user fetch successful:`, response.data);
-    return response.data;
+    return response.data.data;
+    }
+    else{
+    console.log(`${LOG_PREFIX} No user found`, response.data);
+    return response.data.data; 
+    }
   } catch (error) {
     console.error(`${LOG_PREFIX} Current user fetch failed:`, error);
     throw error;
