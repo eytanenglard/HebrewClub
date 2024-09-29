@@ -493,15 +493,15 @@ const PaymentPage: React.FC = () => {
       setDetailedError("Missing enrollment or course details");
       return;
     }
-  
+
     try {
       console.log("Checking for existing user");
       const existingUser = await getCurrentUser();
-  
+
       let user: User;
       let temporaryPassword: string | null = null;
-  
-      if (existingUser) {
+
+      if (existingUser && existingUser != null) {
         console.log("Existing user found, associating course");
         user = existingUser;
       } else {
@@ -515,17 +515,22 @@ const PaymentPage: React.FC = () => {
           throw new Error("Failed to create new user");
         }
       }
-  
-      console.log("Attempting to associate course", courseId, "with user", user._id);
+
+      console.log(
+        "Attempting to associate course",
+        courseId,
+        "with user",
+        user._id
+      );
       await apiAssociateCourseWithUser(user._id, courseId);
       console.log("Course associated successfully");
-  
+
       console.log("Updating lead status");
       await updateLead(enrollmentDetails._id, {
         status: "qualified",
         paymentCompleted: true,
       });
-  
+
       console.log("Sending welcome email");
       await emailService.sendWelcomeEmailWithCourseDetails(
         user.email,
@@ -535,7 +540,7 @@ const PaymentPage: React.FC = () => {
         courseDetails.title,
         dayjs(courseDetails.startDate).format("MMMM D, YYYY")
       );
-  
+
       console.log("User and course association completed successfully");
     } catch (error) {
       console.error("Error handling user and course association:", error);
